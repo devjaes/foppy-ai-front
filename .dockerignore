@@ -1,0 +1,9 @@
+node_modules
+npm-debug.log
+.env
+.DS_Store
+*.log
+/build
+cypress
+cypress.config.ts
+jest.config.ts
