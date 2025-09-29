@@ -80,7 +80,11 @@ export class AudioService {
     intent: string;
     extractedData: Record<string, string | number | boolean | null>;
   }): AnalysisResponse | undefined {
-    if (!result.extractedData || Object.keys(result.extractedData).length === 0) {
+    if (
+      !result.extractedData ||
+      typeof result.extractedData !== 'object' ||
+      Object.keys(result.extractedData).length === 0
+    ) {
       return undefined;
     }
 
