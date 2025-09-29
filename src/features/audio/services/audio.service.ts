@@ -29,8 +29,7 @@ interface AnalysisResponse {
 
 export class AudioService {
   private static instance: AudioService;
-  private transcriptionApiUrl = "https://srpabliss.app.n8n.cloud/webhook/a4b8adaf-8593-4cb1-a6cc-14469ad5529e";
-  private analysisApiUrl = "https://srpabliss.app.n8n.cloud/webhook/f3270e72-76d5-495b-9dbf-27d15b6671c2";
+  private voiceCommandApiUrl = `${process.env.NEXT_PUBLIC_API_URL}/voice-command`;
 
   private constructor() {}
 
@@ -42,43 +41,67 @@ export class AudioService {
   }
 
   public async sendAudio(audioBlob: Blob): Promise<AudioResponse> {
-    // Primero obtenemos la transcripción
     const formData = new FormData();
     formData.append('audio', audioBlob, 'audio.wav');
 
-    const transcriptionResponse = await fetch(this.transcriptionApiUrl, {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      throw new Error('No se encontró token de autenticación');
+    }
+
+    const response = await fetch(this.voiceCommandApiUrl, {
       method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
       body: formData,
     });
 
-    if (!transcriptionResponse.ok) {
-      throw new Error('Error al obtener la transcripción');
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Error al procesar el audio');
     }
 
-    const transcriptionData = await transcriptionResponse.json();
-    const transcription = transcriptionData.transcription || transcriptionData.text;
+    const result = await response.json();
 
-    if (!transcription) {
-      throw new Error('No se pudo obtener la transcripción del audio');
+    if (!result.success) {
+      throw new Error(result.message || 'Error al procesar el comando de voz');
     }
 
-    const analysisResponse = await fetch(this.analysisApiUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ message: transcription }),
-    });
-
-    if (!analysisResponse.ok) {
-      throw new Error('Error al analizar el mensaje');
-    }
-
-    const analysisResult: AnalysisResponse = await analysisResponse.json();
+    const formData_ = this.mapToFormData(result);
 
     return {
-      transcription,
-      formData: analysisResult
+      transcription: result.message,
+      formData: formData_
+    };
+  }
+
+  private mapToFormData(result: {
+    intent: string;
+    extractedData: Record<string, string | number | boolean | null>;
+  }): AnalysisResponse | undefined {
+    if (!result.extractedData || Object.keys(result.extractedData).length === 0) {
+      return undefined;
+    }
+
+    let path = '';
+    switch (result.intent) {
+      case 'CREATE_TRANSACTION':
+        path = 'transactions';
+        break;
+      case 'CREATE_GOAL':
+        path = 'goals';
+        break;
+      case 'CREATE_BUDGET':
+        path = 'budgets';
+        break;
+      default:
+        return undefined;
+    }
+
+    return {
+      path,
+      schema: result.extractedData
     };
   }
 } 
