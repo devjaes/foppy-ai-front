@@ -1,3 +1,5 @@
+import AxiosClient from "@/core/infrastructure/http/axios-client";
+
 interface AudioResponse {
   transcription: string;
   formData?: {
@@ -29,9 +31,11 @@ interface AnalysisResponse {
 
 export class AudioService {
   private static instance: AudioService;
-  private voiceCommandApiUrl = `${process.env.NEXT_PUBLIC_API_URL}/voice-command`;
+  private axiosClient: AxiosClient;
 
-  private constructor() {}
+  private constructor() {
+    this.axiosClient = AxiosClient.getInstance();
+  }
 
   public static getInstance(): AudioService {
     if (!AudioService.instance) {
@@ -44,31 +48,26 @@ export class AudioService {
     const formData = new FormData();
     formData.append('audio', audioBlob, 'audio.wav');
 
-    const token = localStorage.getItem('token');
-    if (!token) {
-      throw new Error('No se encontró token de autenticación');
-    }
+    const response = await this.axiosClient.postForm<{
+      success: boolean;
+      intent: string;
+      extractedData: Record<string, string | number | boolean | null>;
+      confidence: number;
+      message: string;
+    }>('/voice-command', formData);
 
-    const response = await fetch(this.voiceCommandApiUrl, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-      },
-      body: formData,
-    });
+    console.log(response, "lenin");
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || 'Error al procesar el audio');
-    }
-
-    const result = await response.json();
+    const result = response.data;
 
     if (!result.success) {
       throw new Error(result.message || 'Error al procesar el comando de voz');
     }
 
-    const formData_ = this.mapToFormData(result);
+    const formData_ = this.mapToFormData({
+      intent: result.intent,
+      extractedData: result.extractedData
+    });
 
     return {
       transcription: result.message,
