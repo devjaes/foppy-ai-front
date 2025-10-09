@@ -7,6 +7,8 @@ import { Budget } from "../interfaces/budgets.interface";
 import { useCreateBudget, useUpdateBudget } from "./use-budgets-queries";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { useFormData } from "@/hooks/use-form-data";
+import { useEffect, useRef } from "react";
 
 const budgetSchema = z
   .object({
@@ -52,6 +54,8 @@ export const useBudgetForm = ({ budget }: UseBudgetFormProps) => {
   const router = useRouter();
   const createBudget = useCreateBudget();
   const updateBudget = useUpdateBudget();
+  const formData = useFormData();
+  const initialDataProcessedRef = useRef(false);
 
   const defaultValues: Partial<BudgetForm> = {
     category_id: budget?.category?.id || undefined,
@@ -64,6 +68,33 @@ export const useBudgetForm = ({ budget }: UseBudgetFormProps) => {
     resolver: zodResolver(budgetSchema),
     defaultValues,
   });
+
+  useEffect(() => {
+    console.log('Initial budget form values:', form.getValues());
+  }, [form]);
+
+  useEffect(() => {
+    if (!formData || initialDataProcessedRef.current)
+      return;
+
+    if (formData.category_id) {
+      form.setValue('category_id', formData.category_id, { shouldValidate: true });
+    }
+
+    if (formData.limit_amount) {
+      form.setValue('limit_amount', formData.limit_amount, { shouldValidate: true });
+    }
+
+    if (formData.current_amount !== undefined) {
+      form.setValue('current_amount', formData.current_amount, { shouldValidate: true });
+    }
+
+    if (formData.month) {
+      form.setValue('month', new Date(formData.month), { shouldValidate: true });
+    }
+    
+    initialDataProcessedRef.current = true;
+  }, [formData, form]);
 
   const onSubmit: SubmitHandler<BudgetForm> = async (data) => {
     if (!session?.user?.id) return;
