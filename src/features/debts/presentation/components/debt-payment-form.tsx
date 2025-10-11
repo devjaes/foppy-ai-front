@@ -35,8 +35,8 @@ export default function DebtPaymentForm({ debt }: DebtPaymentFormProps) {
         <div className="bg-gray-50 p-4 rounded-lg space-y-2 mb-4 w-full">
           <h3 className="font-semibold text-lg">{debt.description}</h3>
           <div className="grid grid-cols-2 text-sm">
-            <span className="text-gray-500">Monto original:</span>
-            <span className="font-medium">
+            <span className="text-gray-500 ">Monto original:</span>
+            <span className="font-medium dark:text-black">
               {formatCurrency(debt.original_amount)}
             </span>
             <span className="text-gray-500">Monto pagado:</span>
