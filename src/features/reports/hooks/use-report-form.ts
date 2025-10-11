@@ -4,6 +4,8 @@ import { z } from "zod";
 import { ReportFormat, ReportType } from "../interfaces/reports.interface";
 import { useSession } from "next-auth/react";
 import { useGenerateReport } from "./use-reports-queries";
+import { PeriodRange } from "@/components/period-selector";
+import { format } from "date-fns";
 
 // Schema para validar el formulario
 const reportFormSchema = z.object({
@@ -17,7 +19,7 @@ const reportFormSchema = z.object({
 // Tipo para inferir el tipo de datos del formulario
 type ReportFormValues = z.infer<typeof reportFormSchema>;
 
-export const useReportForm = () => {
+export const useReportForm = (selectedPeriod: PeriodRange) => {
   const { data: session } = useSession();
   const userId = session?.user?.id;
   const generateReport = useGenerateReport();
@@ -28,21 +30,25 @@ export const useReportForm = () => {
     defaultValues: {
       type: ReportType.GOALS_BY_CATEGORY,
       format: ReportFormat.PDF,
-      startDate: new Date(),
-      endDate: new Date(),
+      startDate: selectedPeriod.startDate,
+      endDate: selectedPeriod.endDate,
       categoryId: undefined,
     },
   });
 
   // Enviar el formulario
   const onSubmit = (values: ReportFormValues) => {
+    // Usar las fechas del período seleccionado en formato YYYY-MM-DD
+    const startDateStr = format(selectedPeriod.startDate, "yyyy-MM-dd");
+    const endDateStr = format(selectedPeriod.endDate, "yyyy-MM-dd");
+
     // Añadir el userId al objeto de filtros
     const reportRequest = {
       type: values.type,
       format: values.format,
       filters: {
-        startDate: values.startDate?.toISOString(),
-        endDate: values.endDate?.toISOString(),
+        startDate: startDateStr,
+        endDate: endDateStr,
         categoryId: values.categoryId,
         userId: userId?.toString(),
       },

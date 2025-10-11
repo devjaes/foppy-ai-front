@@ -12,9 +12,35 @@ import { useCategories } from "@/features/categories/hooks/use-categories-querie
 import RHFSelect from "@/components/rhf/RHFSelect";
 import RHFDatePicker from "@/components/rhf/date-picker/RHFDatePicker";
 import { FormProvider } from "react-hook-form";
+import { PeriodSelector, type PeriodRange } from "@/components/period-selector";
+import { useState } from "react";
+import { ReportType, ReportFilters } from "../../interfaces/reports.interface";
+import { format } from "date-fns";
 
-export default function ReportForm() {
-  const { form, onSubmit } = useReportForm();
+interface ReportFormProps {
+  onPreview?: (config: {
+    type: ReportType;
+    filters: ReportFilters;
+    period: PeriodRange;
+  }) => void;
+  initialPeriod?: PeriodRange | null;
+}
+
+export default function ReportForm({
+  onPreview,
+  initialPeriod,
+}: ReportFormProps = {}) {
+  // Estado para el período seleccionado
+  const [selectedPeriod, setSelectedPeriod] = useState<PeriodRange>(
+    initialPeriod || {
+      startDate: new Date(new Date().getFullYear(), new Date().getMonth(), 1), // Primer día del mes actual
+      endDate: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0), // Último día del mes actual
+      type: "current-month",
+      label: "Mes actual",
+    }
+  );
+
+  const { form, onSubmit } = useReportForm(selectedPeriod);
   const generateReport = useGenerateReport();
   const { data: categories = [] } = useCategories();
 
@@ -71,13 +97,38 @@ export default function ReportForm() {
           />
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <RHFDatePicker name="startDate" label="Fecha de Inicio (Opcional)" />
-
-          <RHFDatePicker name="endDate" label="Fecha de Fin (Opcional)" />
+        <div className="col-span-2">
+          <label className="text-sm font-medium mb-2 block">
+            Período del Reporte
+          </label>
+          <PeriodSelector value={selectedPeriod} onChange={setSelectedPeriod} />
         </div>
 
-        <div className="flex justify-end">
+        <div className="flex justify-end gap-2">
+          {onPreview && (
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => {
+                const values = form.getValues();
+                const config = {
+                  type: values.type,
+                  filters: {
+                    startDate: format(selectedPeriod.startDate, "yyyy-MM-dd"),
+                    endDate: format(selectedPeriod.endDate, "yyyy-MM-dd"),
+                    categoryId: values.categoryId,
+                    userId: form.getValues().userId,
+                  },
+                  period: selectedPeriod,
+                };
+                onPreview(config);
+              }}
+              disabled={generateReport.isPending}
+              className="w-full md:w-auto"
+            >
+              Vista Previa
+            </Button>
+          )}
           <Button
             type="submit"
             disabled={generateReport.isPending}

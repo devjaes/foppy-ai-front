@@ -1,12 +1,23 @@
 export enum ReportType {
+  // Existentes
   GOALS_BY_STATUS = "GOALS_BY_STATUS",
   GOALS_BY_CATEGORY = "GOALS_BY_CATEGORY",
+  CONTRIBUTIONS_BY_GOAL = "CONTRIBUTIONS_BY_GOAL",
+  SAVINGS_COMPARISON = "SAVINGS_COMPARISON",
+  SAVINGS_SUMMARY = "SAVINGS_SUMMARY",
+  // Nuevos
+  BUDGET = "BUDGET",
+  EXPENSE = "EXPENSE",
+  INCOME = "INCOME",
+  DEBT = "DEBT",
+  COMPREHENSIVE = "COMPREHENSIVE",
 }
 
 export enum ReportFormat {
   JSON = "JSON",
   PDF = "PDF",
   EXCEL = "EXCEL",
+  CSV = "CSV",
 }
 
 export interface ReportFilters {
@@ -35,12 +46,21 @@ export interface Report {
 export const REPORT_TYPE_LABELS = {
   [ReportType.GOALS_BY_STATUS]: "Metas por Estado",
   [ReportType.GOALS_BY_CATEGORY]: "Metas por Categoría",
+  [ReportType.CONTRIBUTIONS_BY_GOAL]: "Contribuciones por Meta",
+  [ReportType.SAVINGS_COMPARISON]: "Comparación de Ahorros",
+  [ReportType.SAVINGS_SUMMARY]: "Resumen de Ahorros",
+  [ReportType.BUDGET]: "Presupuestos",
+  [ReportType.EXPENSE]: "Gastos",
+  [ReportType.INCOME]: "Ingresos",
+  [ReportType.DEBT]: "Deudas",
+  [ReportType.COMPREHENSIVE]: "Reporte Completo",
 };
 
 export const REPORT_FORMAT_LABELS = {
   [ReportFormat.JSON]: "JSON",
   [ReportFormat.PDF]: "PDF",
   [ReportFormat.EXCEL]: "Excel",
+  [ReportFormat.CSV]: "CSV",
 };
 
 // Añadir un tipo especial para el formato binario

@@ -6,7 +6,10 @@ import { useSession } from "next-auth/react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { useMonthlyBalance } from "@/features/transactions/hooks/use-transactions-queries";
-import { useFindMonthlyBudgets, useFindBudgetUsersById } from "@/features/budgets/hooks/use-budgets-queries";
+import {
+  useFindMonthlyBudgets,
+  useFindBudgetUsersById,
+} from "@/features/budgets/hooks/use-budgets-queries";
 import { useFindGoalUsersById } from "@/features/goals/hooks/use-goals-queries";
 import { useFindDebtUserById } from "@/features/debts/hooks/use-debts-queries";
 import { Button } from "@/components/ui/button";
@@ -34,10 +37,7 @@ import {
   useMonthlyTrends,
 } from "@/features/transactions/hooks/use-transactions-queries";
 import { startOfMonth, endOfMonth } from "date-fns";
-import {
-  PeriodSelector,
-  type PeriodRange,
-} from "@/components/period-selector";
+import { PeriodSelector, type PeriodRange } from "@/components/period-selector";
 import { IncomeExpenseChart } from "@/components/charts/income-expense-chart";
 import { CategoryPieChart } from "@/components/charts/category-pie-chart";
 import { TrendLineChart } from "@/components/charts/trend-line-chart";
@@ -67,46 +67,45 @@ export default function Page() {
 
   // Usar el período seleccionado para category totals
   const { data: categoryTotals = [], isLoading: isLoadingCategoryTotals } =
-    useCategoryTotals(
-      userId!,
-      startDateStr,
-      endDateStr
-    );
+    useCategoryTotals(userId!, startDateStr, endDateStr);
 
   // Obtener presupuestos y filtrar por período
   const { data: allBudgets = [], isLoading: isLoadingBudgets } =
     useFindBudgetUsersById(userId!);
-  
+
   // Filtrar presupuestos: mostrar los del rango de meses seleccionado
   const budgets = allBudgets.filter((budget) => {
     if (!budget.month) return false;
     const budgetDate = new Date(budget.month);
-    return budgetDate >= selectedPeriod.startDate && budgetDate <= selectedPeriod.endDate;
+    return (
+      budgetDate >= selectedPeriod.startDate &&
+      budgetDate <= selectedPeriod.endDate
+    );
   });
 
   // Obtener metas y filtrar por período
-  const { data: allGoals = [], isLoading: isLoadingGoals } = useFindGoalUsersById(
-    userId!
-  );
-  
+  const { data: allGoals = [], isLoading: isLoadingGoals } =
+    useFindGoalUsersById(userId!);
+
   // Filtrar metas: mostrar si están activas O su fecha fin está en el rango
   const goals = allGoals.filter((goal) => {
     const isActive = goal.current_amount < goal.target_amount;
     const endDate = new Date(goal.end_date);
-    const isInPeriod = endDate >= selectedPeriod.startDate && endDate <= selectedPeriod.endDate;
+    const isInPeriod =
+      endDate >= selectedPeriod.startDate && endDate <= selectedPeriod.endDate;
     return isActive || isInPeriod;
   });
 
   // Obtener deudas y filtrar por período
-  const { data: allDebts = [], isLoading: isLoadingDebts } = useFindDebtUserById(
-    userId!
-  );
-  
+  const { data: allDebts = [], isLoading: isLoadingDebts } =
+    useFindDebtUserById(userId!);
+
   // Filtrar deudas: mostrar si están pendientes O su vencimiento está en el rango
   const debts = allDebts.filter((debt) => {
     const isPending = debt.pending_amount > 0;
     const dueDate = new Date(debt.due_date);
-    const isInPeriod = dueDate >= selectedPeriod.startDate && dueDate <= selectedPeriod.endDate;
+    const isInPeriod =
+      dueDate >= selectedPeriod.startDate && dueDate <= selectedPeriod.endDate;
     return isPending || isInPeriod;
   });
 
@@ -119,7 +118,10 @@ export default function Page() {
   const barChartData = monthlyTrends
     .filter((trend) => {
       const trendDate = new Date(trend.month + "-01");
-      return trendDate >= selectedPeriod.startDate && trendDate <= selectedPeriod.endDate;
+      return (
+        trendDate >= selectedPeriod.startDate &&
+        trendDate <= selectedPeriod.endDate
+      );
     })
     .map((trend) => ({
       month: format(new Date(trend.month + "-01"), "MMM", { locale: es }),
@@ -140,13 +142,11 @@ export default function Page() {
     .slice(0, 5); // Top 5 categorías
 
   // Preparar datos para el Line Chart (Tendencias - últimos 6 meses)
-  const lineChartData = monthlyTrends
-    .slice(-6)
-    .map((trend) => ({
-      month: format(new Date(trend.month + "-01"), "MMM", { locale: es }),
-      income: trend.income,
-      expense: trend.expense,
-    }));
+  const lineChartData = monthlyTrends.slice(-6).map((trend) => ({
+    month: format(new Date(trend.month + "-01"), "MMM", { locale: es }),
+    income: trend.income,
+    expense: trend.expense,
+  }));
 
   // Función para determinar el color de la barra de progreso
   const getProgressColor = (percentage: number, isInverse: boolean = false) => {
@@ -181,7 +181,10 @@ export default function Page() {
         <div className="space-y-6">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <h1 className="text-3xl font-bold">Dashboard Financiero</h1>
-            <PeriodSelector value={selectedPeriod} onChange={setSelectedPeriod} />
+            <PeriodSelector
+              value={selectedPeriod}
+              onChange={setSelectedPeriod}
+            />
           </div>
 
           {/* Resumen Financiero */}
@@ -244,7 +247,7 @@ export default function Page() {
           {/* Gráficos */}
           <section className="space-y-4">
             <h2 className="text-xl font-semibold">Análisis Gráfico</h2>
-            
+
             {/* Fila 1: Bar Chart e Pie Chart */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <IncomeExpenseChart
@@ -258,10 +261,7 @@ export default function Page() {
             </div>
 
             {/* Fila 2: Line Chart (ancho completo) */}
-            <TrendLineChart
-              data={lineChartData}
-              isLoading={isLoadingTrends}
-            />
+            <TrendLineChart data={lineChartData} isLoading={isLoadingTrends} />
           </section>
 
           {/* Metas y Presupuestos */}
@@ -486,6 +486,26 @@ export default function Page() {
                 >
                   <FileText className="h-6 w-6" />
                   <span>Crear reporte</span>
+                </Button>
+              </Link>
+              <Link
+                href={{
+                  pathname: "/management/reports/create",
+                  query: {
+                    startDate: format(selectedPeriod.startDate, "yyyy-MM-dd"),
+                    endDate: format(selectedPeriod.endDate, "yyyy-MM-dd"),
+                    type: selectedPeriod.type,
+                    label: selectedPeriod.label,
+                  },
+                }}
+                passHref
+              >
+                <Button
+                  className="w-full h-full flex flex-col gap-2 p-4"
+                  variant="default"
+                >
+                  <BarChart3 className="h-6 w-6" />
+                  <span>Reporte del Período</span>
                 </Button>
               </Link>
             </div>
