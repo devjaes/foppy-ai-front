@@ -15,6 +15,9 @@ interface FormData {
   contribution_frecuency?: number;
   contribution_amount?: number;
   end_date?: string;
+  category_id?: number;
+  limit_amount?: number;
+  month?: string;
 }
 
 export function useFormData() {

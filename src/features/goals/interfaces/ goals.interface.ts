@@ -20,6 +20,7 @@ export interface GoalCreate extends GoalBase {
   user_id: number;
   end_date: string;
   category_id?: number;
+  contribution_amount?: number;
 }
 
 export type GoalUpdate = Partial<GoalCreate>;
