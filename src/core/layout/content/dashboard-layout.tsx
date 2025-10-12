@@ -7,13 +7,22 @@ import { AudioRecorder } from "@/components/audio-recorder/audio-recorder";
 import { cn } from "@/lib/utils";
 
 import { Sidebar } from "../dashboard/sidebar/sidebar";
+import { useEffect } from "react";
 
 export default function DashboardPanelLayout({
   children,
+  title,
 }: {
   children: React.ReactNode;
+  title?: string;
 }) {
   const sidebar = useStore(useSidebarToggle, (state) => state);
+
+  useEffect(() => {
+    if (title) {
+      document.title = `FoppyAI - ${title}`;
+    }
+  }, [title]);
 
   if (!sidebar) return null;
 

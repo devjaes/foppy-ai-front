@@ -6,6 +6,7 @@ import {
   LayoutDashboard,
   LucideIcon,
   Target,
+  User,
 } from "lucide-react";
 
 type Submenu = {
@@ -73,6 +74,13 @@ export const getAllMenuList = (pathname: string) => {
           label: "Transacciones",
           active: pathname.startsWith("/management/transactions"),
           icon: ArrowLeftRight,
+          submenus: [],
+        },
+        {
+          href: "/management/profile",
+          label: "Mi Perfil",
+          active: pathname.startsWith("/management/profile"),
+          icon: User,
           submenus: [],
         },
       ],
