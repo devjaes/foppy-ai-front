@@ -2,6 +2,7 @@ import {
   ArrowLeftRight,
   BanknoteArrowDown,
   CreditCard,
+  FileText,
   HandCoins,
   LayoutDashboard,
   LucideIcon,
@@ -74,6 +75,13 @@ export const getAllMenuList = (pathname: string) => {
           label: "Transacciones",
           active: pathname.startsWith("/management/transactions"),
           icon: ArrowLeftRight,
+          submenus: [],
+        },
+        {
+          href: "/management/reports/create",
+          label: "Reportes",
+          active: pathname.startsWith("/management/reports/create"),
+          icon: FileText,
           submenus: [],
         },
         {
