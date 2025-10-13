@@ -38,7 +38,7 @@ export default function GoalContributionForm({
           <h3 className="font-semibold text-lg">{goal.name}</h3>
           <div className="grid grid-cols-2 text-sm mb-2">
             <span className="text-gray-500">Meta total:</span>
-            <span className="font-medium">
+            <span className="font-medium dark:text-black">
               {formatCurrency(goal.target_amount)}
             </span>
             <span className="text-gray-500">Acumulado:</span>

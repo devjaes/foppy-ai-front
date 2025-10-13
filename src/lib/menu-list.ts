@@ -2,10 +2,12 @@ import {
   ArrowLeftRight,
   BanknoteArrowDown,
   CreditCard,
+  FileText,
   HandCoins,
   LayoutDashboard,
   LucideIcon,
   Target,
+  User,
 } from "lucide-react";
 
 type Submenu = {
@@ -73,6 +75,20 @@ export const getAllMenuList = (pathname: string) => {
           label: "Transacciones",
           active: pathname.startsWith("/management/transactions"),
           icon: ArrowLeftRight,
+          submenus: [],
+        },
+        {
+          href: "/management/reports/create",
+          label: "Reportes",
+          active: pathname.startsWith("/management/reports/create"),
+          icon: FileText,
+          submenus: [],
+        },
+        {
+          href: "/management/profile",
+          label: "Mi Perfil",
+          active: pathname.startsWith("/management/profile"),
+          icon: User,
           submenus: [],
         },
       ],

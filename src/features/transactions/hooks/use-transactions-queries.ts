@@ -74,6 +74,37 @@ export const useCategoryTotals = (
   });
 };
 
+export const usePeriodBalance = (
+  userId: string,
+  startDate: string,
+  endDate: string
+) => {
+  return useQuery({
+    queryKey: [...TRANSACTIONS_KEYS.USER_TRANSACTIONS(userId), "balance", startDate, endDate],
+    queryFn: async () => {
+      const transactions = await transactionService.getUserTransactionsFiltered(
+        Number(userId),
+        { startDate, endDate }
+      );
+
+      const totalIncome = transactions
+        .filter((t) => t.type === "INCOME")
+        .reduce((sum, t) => sum + Number(t.amount), 0);
+
+      const totalExpense = transactions
+        .filter((t) => t.type === "EXPENSE")
+        .reduce((sum, t) => sum + Number(t.amount), 0);
+
+      return {
+        totalIncome,
+        totalExpense,
+        balance: totalIncome - totalExpense,
+      };
+    },
+    enabled: !!userId && !!startDate && !!endDate,
+  });
+};
+
 export const useMonthlyTrends = (userId: string) => {
   return useQuery({
     queryKey: TRANSACTIONS_KEYS.MONTHLY_TRENDS(userId),

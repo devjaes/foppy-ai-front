@@ -11,7 +11,8 @@ const reportFormSchema = z.object({
   format: z.nativeEnum(ReportFormat),
   startDate: z.coerce.date().optional(),
   endDate: z.coerce.date().optional(),
-  categoryId: z.coerce.string().optional(),
+  categoryId: z.string().optional(),
+  goalId: z.string().optional(),
 });
 
 // Tipo para inferir el tipo de datos del formulario
@@ -26,26 +27,44 @@ export const useReportForm = () => {
   const form = useForm<ReportFormValues>({
     resolver: zodResolver(reportFormSchema),
     defaultValues: {
-      type: ReportType.GOALS_BY_CATEGORY,
+      type: ReportType.GOALS_BY_STATUS,
       format: ReportFormat.PDF,
-      startDate: new Date(),
-      endDate: new Date(),
-      categoryId: undefined,
+      startDate: undefined,
+      endDate: undefined,
+      categoryId: "",
+      goalId: "",
     },
   });
 
   // Enviar el formulario
   const onSubmit = (values: ReportFormValues) => {
-    // Añadir el userId al objeto de filtros
+    const filters: Record<string, string> = {
+      userId: userId?.toString() || "",
+    };
+
+    // Solo incluir fechas si están definidas
+    if (values.startDate) {
+      filters.startDate = values.startDate.toISOString();
+    }
+
+    if (values.endDate) {
+      filters.endDate = values.endDate.toISOString();
+    }
+
+    // Solo incluir categoryId si no está vacío
+    if (values.categoryId && values.categoryId !== "") {
+      filters.categoryId = values.categoryId;
+    }
+
+    // Solo incluir goalId si no está vacío
+    if (values.goalId && values.goalId !== "" && values.goalId !== "none") {
+      filters.goalId = values.goalId;
+    }
+
     const reportRequest = {
       type: values.type,
       format: values.format,
-      filters: {
-        startDate: values.startDate?.toISOString(),
-        endDate: values.endDate?.toISOString(),
-        categoryId: values.categoryId,
-        userId: userId?.toString(),
-      },
+      filters,
     };
 
     generateReport.mutate(reportRequest, {
@@ -58,7 +77,7 @@ export const useReportForm = () => {
       },
     });
 
-    console.log(reportRequest);
+    console.log("Report request:", reportRequest);
 
     return reportRequest;
   };

@@ -9,20 +9,17 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import ReportForm from "../components/report-form";
-import { ChevronLeft } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
 
 export default function ReportCreateView() {
   return (
     <ContentLayout title="Crear Reporte">
       <div className="space-y-6">
         <div className="flex items-center gap-4">
-          <Link href="/management/reports" passHref>
+          {/* <Link href="/management/reports" passHref>
             <Button variant="outline" size="icon">
               <ChevronLeft className="h-4 w-4" />
             </Button>
-          </Link>
+          </Link> */}
           <h2 className="text-2xl font-bold">Generar Nuevo Reporte</h2>
         </div>
 

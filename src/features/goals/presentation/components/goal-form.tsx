@@ -39,6 +39,7 @@ const GoalForm = ({ goal }: GoalFormProps) => {
         <RHFInput name="name" label="Nombre" />
         <RHFInput name="target_amount" label="Cantidad Objetivo" />
         <RHFInput name="current_amount" label="Cantidad Actual" />
+        <RHFInput name="contribution_amount" label="Cantidad de Contribución" type="number" />
         <RHFSelect
           name="contribution_frequency"
           label="Frecuencia de Contribución"

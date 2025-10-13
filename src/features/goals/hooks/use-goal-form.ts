@@ -37,6 +37,9 @@ const goalSchema = z
     category_id: z.coerce.number({
       invalid_type_error: "La categoría debe ser un número",
     }),
+    contribution_amount: z.coerce.number({
+      invalid_type_error: "La cantidad de contribución debe ser un número",
+    }).optional(),
   })
   .refine((data) => data.target_amount > data.current_amount, {
     path: ["target_amount"],
@@ -68,6 +71,7 @@ export const useGoalForm = ({ goal }: UseGoalFormProps) => {
       end_date: goal?.end_date ? new Date(goal.end_date) : new Date(),
       category_id: goal?.category?.id || undefined,
       contribution_frequency: goal?.contribution_frequency || 1,
+      contribution_amount: goal?.contribution_amount || undefined,
     },
   });
 
@@ -109,6 +113,14 @@ export const useGoalForm = ({ goal }: UseGoalFormProps) => {
 
     if (formData.contribution_frecuency) {
       form.setValue('contribution_frequency', formData.contribution_frecuency, { shouldValidate: true });
+    }
+
+    if (formData.category_id) {
+      form.setValue('category_id', formData.category_id, { shouldValidate: true });
+    }
+
+    if (formData.contribution_amount) {
+      form.setValue('contribution_amount', formData.contribution_amount, { shouldValidate: true });
     }
 
     initialDataProcessedRef.current = true;
