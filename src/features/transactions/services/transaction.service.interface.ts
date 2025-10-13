@@ -12,6 +12,7 @@ export interface MonthlyBalance {
 
 export interface CategoryTotal {
   category: string;
+  categoryName?: string;
   total: number;
 }
 
