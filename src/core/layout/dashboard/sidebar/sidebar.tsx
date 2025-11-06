@@ -36,7 +36,7 @@ export function Sidebar() {
             <Image
               src="/images/logo.png"
               priority
-              alt="FoppyAI"
+              alt="FoppyAI Logo"
               width={40}
               height={40}
             />
@@ -48,7 +48,18 @@ export function Sidebar() {
                   : "translate-x-0 opacity-100"
               )}
             >
-              FoppyAI
+              <div className="flex flex-col items-center justify-center">
+                <Image
+                  src="/images/logoOL.png"
+                  priority
+                  alt="FoppyAI"
+                  width={90}
+                  height={80}
+                />
+                <p className="text-xs font-light text-black dark:text-white">
+                  Smart Finance
+                </p>
+              </div>
             </h1>
           </Link>
         </Button>
