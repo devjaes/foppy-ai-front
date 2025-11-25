@@ -7,8 +7,8 @@ interface IAuthService {
   login(user: Login): Promise<AuthResponse>;
   register(user: Register): Promise<AuthResponse>;
   logout(): Promise<void>;
-  emailGender(email: EmailGender): Promise<string>;
-  recoveryPassword(user: Recovery): Promise<string>;
+  forgotPassword(email: EmailGender): Promise<string>;
+  resetPassword(user: Recovery): Promise<string>;
 }
 
 export class AuthService implements IAuthService {
@@ -20,17 +20,22 @@ export class AuthService implements IAuthService {
     this.axiosCLient = AxiosClient.getInstance();
   }
 
-  async recoveryPassword(user: Recovery): Promise<string> {
-    const { data } = await this.axiosCLient.put(`${this.url}/password`, {
-      user,
-    });
+  async forgotPassword(email: EmailGender): Promise<string> {
+    const { data } = await this.axiosCLient.post<{ message: string }>(
+      `${this.url}/forgot-password`,
+      email
+    );
     return data.message;
   }
 
-  async emailGender(email: EmailGender): Promise<string> {
-    const { data } = await this.axiosCLient.post(`${this.url}/password`, {
-      user: email,
-    });
+  async resetPassword(recovery: Recovery): Promise<string> {
+    const { data } = await this.axiosCLient.post<{ message: string }>(
+      `${this.url}/reset-password`,
+      {
+        token: recovery.resetPasswordToken,
+        password: recovery.password,
+      }
+    );
     return data.message;
   }
 
