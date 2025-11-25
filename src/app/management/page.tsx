@@ -35,6 +35,7 @@ import { PeriodSelector, type PeriodRange } from "@/components/period-selector";
 import { IncomeExpenseChart } from "@/components/charts/income-expense-chart";
 import { CategoryPieChart } from "@/components/charts/category-pie-chart";
 import { TrendLineChart } from "@/components/charts/trend-line-chart";
+import { SubscriptionStatus } from "@/features/subscriptions/components/SubscriptionStatus";
 
 export default function Page() {
   const { data: session } = useSession();
@@ -184,6 +185,13 @@ export default function Page() {
             />
           </div>
 
+          {/* Subscription Status */}
+          <section>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <SubscriptionStatus userId={userId} />
+            </div>
+          </section>
+
           {/* Resumen Financiero */}
           <section className="space-y-4">
             <h2 className="text-xl font-semibold">
@@ -228,11 +236,10 @@ export default function Page() {
                 </CardHeader>
                 <CardContent>
                   <p
-                    className={`text-2xl font-bold ${
-                      (periodBalance?.balance || 0) >= 0
+                    className={`text-2xl font-bold ${(periodBalance?.balance || 0) >= 0
                         ? "text-green-600"
                         : "text-red-600"
-                    }`}
+                      }`}
                   >
                     {formatCurrency(periodBalance?.balance || 0)}
                   </p>
