@@ -7,7 +7,13 @@ import { useAuthOperations } from "./use-auth-operations";
 
 const schema = z
   .object({
-    password: z.string().min(1, "La contraseña es requerida"),
+    password: z
+      .string()
+      .min(8, "La contraseña debe tener como mínimo 8 carácteres")
+      .regex(
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&.])[A-Za-z\d@$!%*?&.]{8,}$/,
+        "La contraseña debe contener al menos una letra mayúscula, una letra minúscula, un número y un símbolo especial"
+      ),
     passwordConfirmation: z
       .string()
       .min(1, "La contraseña de confirmación es requerida"),
@@ -20,7 +26,7 @@ const schema = z
 type FormFields = z.infer<typeof schema>;
 
 export function useRecoveryForm() {
-  const { recoveryPasswordHandler } = useAuthOperations();
+  const { resetPasswordHandler } = useAuthOperations();
   const methods = useForm<FormFields>({
     resolver: zodResolver(schema),
     defaultValues: {
@@ -30,7 +36,7 @@ export function useRecoveryForm() {
   });
 
   const onSubmit: SubmitHandler<FormFields> = async (data) => {
-    await recoveryPasswordHandler(data);
+    await resetPasswordHandler(data);
   };
 
   return { onSubmit, methods, isSubmiting: methods.formState.isSubmitting };

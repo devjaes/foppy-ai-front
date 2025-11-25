@@ -15,7 +15,7 @@ const schema = z.object({
 type FormFields = z.infer<typeof schema>;
 
 export function useEmailGenderForm() {
-  const { emailGenderHandler } = useAuthOperations();
+  const { forgotPasswordHandler } = useAuthOperations();
   const methods = useForm<FormFields>({
     resolver: zodResolver(schema),
     defaultValues: {
@@ -24,7 +24,7 @@ export function useEmailGenderForm() {
   });
 
   const onSubmit: SubmitHandler<FormFields> = async (data) => {
-    await emailGenderHandler(data);
+    await forgotPasswordHandler(data);
   };
 
   return { onSubmit, methods, isSubmiting: methods.formState.isSubmitting };
