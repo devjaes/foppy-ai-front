@@ -66,13 +66,13 @@ export function SubscriptionForm({ planId, planName, price, userId }: Subscripti
 				{/* Payment Form */}
 				<Card className="border-2 shadow-xl">
 					<CardHeader className="space-y-1 pb-6">
-						<CardTitle className="text-2xl">Payment Details</CardTitle>
-						<CardDescription>Complete your subscription securely</CardDescription>
+						<CardTitle className="text-2xl">Detalles del pago</CardTitle>
+						<CardDescription>Completa tu suscripción de manera segura</CardDescription>
 					</CardHeader>
 					<form onSubmit={handleSubscribe}>
 						<CardContent className="space-y-6">
 							<div className="space-y-2">
-								<Label htmlFor="card-number">Card Number</Label>
+								<Label htmlFor="card-number">Número de tarjeta</Label>
 								<div className="relative">
 									<CreditCard className="absolute left-3 top-3 h-5 w-5 text-muted-foreground" />
 									<Input
@@ -91,7 +91,7 @@ export function SubscriptionForm({ planId, planName, price, userId }: Subscripti
 
 							<div className="grid grid-cols-2 gap-4">
 								<div className="space-y-2">
-									<Label htmlFor="expiry">Expiry Date</Label>
+									<Label htmlFor="expiry">Fecha de expiración</Label>
 									<Input
 										id="expiry"
 										placeholder="MM/YY"
@@ -112,7 +112,7 @@ export function SubscriptionForm({ planId, planName, price, userId }: Subscripti
 							</div>
 
 							<div className="space-y-2">
-								<Label htmlFor="name">Cardholder Name</Label>
+								<Label htmlFor="name">Nombre del titular</Label>
 								<Input
 									id="name"
 									placeholder="John Doe"
@@ -125,11 +125,11 @@ export function SubscriptionForm({ planId, planName, price, userId }: Subscripti
 							<div className="flex items-center gap-4 pt-4 border-t">
 								<div className="flex items-center gap-2 text-sm text-muted-foreground">
 									<Shield className="h-5 w-5 text-green-500" />
-									<span>SSL Encrypted</span>
+									<span>SSL Encriptado</span>
 								</div>
 								<div className="flex items-center gap-2 text-sm text-muted-foreground">
 									<Lock className="h-5 w-5 text-green-500" />
-									<span>Secure Payment</span>
+									<span>Pago Seguro</span>
 								</div>
 							</div>
 						</CardContent>
@@ -142,14 +142,14 @@ export function SubscriptionForm({ planId, planName, price, userId }: Subscripti
 								{loading ? (
 									<>
 										<Loader2 className="mr-2 h-5 w-5 animate-spin" />
-										Processing Payment...
+										Procesando pago...
 									</>
 								) : (
-									`Pay $${price}`
+									`Pagar $${price}`
 								)}
 							</Button>
 							<p className="text-xs text-center text-muted-foreground">
-								By confirming your subscription, you agree to our Terms of Service
+								Al confirmar tu suscripción, aceptas nuestros Términos de Servicio
 							</p>
 						</CardFooter>
 					</form>
@@ -159,37 +159,35 @@ export function SubscriptionForm({ planId, planName, price, userId }: Subscripti
 				<div className="space-y-6">
 					<Card className="border-2 bg-gradient-to-br from-primary/5 via-purple-500/5 to-pink-500/5">
 						<CardHeader>
-							<CardTitle className="text-2xl">Order Summary</CardTitle>
-							<CardDescription>Review your subscription details</CardDescription>
+							<CardTitle className="text-2xl">Detalle de la orden</CardTitle>
+							<CardDescription>Revisa los detalles de tu suscripción</CardDescription>
 						</CardHeader>
 						<CardContent className="space-y-6">
 							<div className="space-y-4">
 								<div className="flex items-center justify-between pb-4 border-b">
 									<div>
 										<h3 className="font-semibold text-lg">{planName} Plan</h3>
-										<p className="text-sm text-muted-foreground">Monthly subscription</p>
+										<p className="text-sm text-muted-foreground">Suscripción mensual</p>
 									</div>
 									<div className="text-right">
 										<p className="text-2xl font-bold">${price}</p>
-										<p className="text-sm text-muted-foreground">/month</p>
+										<p className="text-sm text-muted-foreground">/mes</p>
 									</div>
 								</div>
 
 								<div className="space-y-3">
 									<h4 className="font-semibold text-sm uppercase tracking-wide text-muted-foreground">
-										What's included:
+										Incluye	:
 									</h4>
 									{planName === "Plus" ? (
 										<ul className="space-y-2">
 											{[
-												"Voice info entry",
-												"Unlimited AI access",
-												"Advanced Recommendations",
-												"Detailed Reports",
-												"Priority support",
-												"Custom categories",
-												"Budget alerts",
-												"Multi-device sync"
+												"Entrada de voz",
+												"Recomendaciones avanzadas",
+												"Informes detallados",
+												"Soporte prioritario",
+												"Categorías personalizadas",
+												"Alertas de presupuesto",
 											].map((feature, idx) => (
 												<li key={idx} className="flex items-start gap-2">
 													<Check className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" />
@@ -200,11 +198,9 @@ export function SubscriptionForm({ planId, planName, price, userId }: Subscripti
 									) : (
 										<ul className="space-y-2">
 											{[
-												"Voice info entry",
-												"Unlimited AI access",
-												"Basic support",
-												"Mobile app access",
-												"Export reports"
+												"Entrada de voz impulsada por IA",
+												"Soporte básico",
+												"Acceso a presupuestos, reportes y categorías",
 											].map((feature, idx) => (
 												<li key={idx} className="flex items-start gap-2">
 													<Check className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" />
@@ -221,15 +217,15 @@ export function SubscriptionForm({ planId, planName, price, userId }: Subscripti
 										<span>${price}</span>
 									</div>
 									<div className="flex justify-between text-sm">
-										<span className="text-muted-foreground">14-day free trial</span>
+										<span className="text-muted-foreground">Prueba gratuita de 14 días</span>
 										<span className="text-green-500 font-semibold">-${price}</span>
 									</div>
 									<div className="flex justify-between text-lg font-bold pt-2 border-t">
-										<span>Due today</span>
+										<span>Deuda total</span>
 										<span>$0.00</span>
 									</div>
 									<p className="text-xs text-muted-foreground pt-2">
-										You won't be charged until your trial ends on{" "}
+										No serás cobrado hasta que tu prueba gratuita termine el{" "}
 										{new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toLocaleDateString()}
 									</p>
 								</div>
@@ -244,27 +240,27 @@ export function SubscriptionForm({ planId, planName, price, userId }: Subscripti
 								<div className="flex items-start gap-3">
 									<Shield className="h-6 w-6 text-green-500 flex-shrink-0 mt-0.5" />
 									<div>
-										<h4 className="font-semibold">Secure & Encrypted</h4>
+										<h4 className="font-semibold">Seguro & Encriptado</h4>
 										<p className="text-sm text-muted-foreground">
-											Your payment information is encrypted and secure
+											Tu información de pago está encriptada y segura
 										</p>
 									</div>
 								</div>
 								<div className="flex items-start gap-3">
 									<Check className="h-6 w-6 text-green-500 flex-shrink-0 mt-0.5" />
 									<div>
-										<h4 className="font-semibold">Cancel Anytime</h4>
+										<h4 className="font-semibold">Cancelar en cualquier momento</h4>
 										<p className="text-sm text-muted-foreground">
-											No commitments. Cancel your subscription anytime
+											No compromisos. Cancelar tu suscripción en cualquier momento
 										</p>
 									</div>
 								</div>
 								<div className="flex items-start gap-3">
 									<Lock className="h-6 w-6 text-green-500 flex-shrink-0 mt-0.5" />
 									<div>
-										<h4 className="font-semibold">Money-Back Guarantee</h4>
+										<h4 className="font-semibold">Garantía de devolución de dinero</h4>
 										<p className="text-sm text-muted-foreground">
-											Full refund within 30 days if you're not satisfied
+											Devolución total dentro de 30 días si no estás satisfecho
 										</p>
 									</div>
 								</div>
