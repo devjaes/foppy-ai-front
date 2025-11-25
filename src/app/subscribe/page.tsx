@@ -53,13 +53,13 @@ export default function SubscribePage() {
 	}
 
 	return (
-		<div className="min-h-screen bg-background flex items-center justify-center p-4">
+		<div className="min-h-screen bg-gradient-to-b from-background via-secondary/10 to-background flex items-center justify-center p-4">
 			<SubscriptionForm
 				planId={plan.id}
 				planName={plan.name}
 				price={plan.price}
-				userId={1} // Hardcoded user ID for demo/fake payment as requested
 			/>
 		</div>
 	);
 }
+
