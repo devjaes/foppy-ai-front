@@ -58,6 +58,7 @@ export default function SubscribePage() {
 				planId={plan.id}
 				planName={plan.name}
 				price={plan.price}
+				frequency={plan.frequency}
 			/>
 		</div>
 	);

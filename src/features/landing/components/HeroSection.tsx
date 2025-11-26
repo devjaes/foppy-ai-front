@@ -15,14 +15,14 @@ export function HeroSection() {
 			<div className="container max-w-7xl px-4 md:px-8 lg:px-12 relative z-10">
 				<div className="flex flex-col items-center text-center space-y-12">
 					{/* Main content */}
-					<div className="space-y-6 max-w-5xl">
+					<div className="space-y-7 max-w-5xl">
 						<div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-medium mb-4 animate-fade-in">
 							<Sparkles className="h-4 w-4" />
 							<span>Inteligencia Artificial para Finanzas</span>
 						</div>
 
 						<h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl bg-clip-text text-transparent bg-gradient-to-r from-primary via-purple-500 to-pink-600 animate-gradient-x">
-							Gobierna tus finanzas con Inteligencia Artificial
+							Toma el control total de tus finanzas con IA
 						</h1>
 
 						<p className="mx-auto text-xl md:text-2xl text-muted-foreground max-w-[800px] leading-relaxed">

@@ -14,6 +14,7 @@ export interface CategoryTotal {
   category: string;
   categoryName?: string;
   total: number;
+  count?: number;
 }
 
 export interface MonthlyTrend {

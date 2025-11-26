@@ -16,10 +16,11 @@ interface SubscriptionFormProps {
 	planId: number;
 	planName: string;
 	price: string;
+	frequency: string;
 	userId?: number; // Optional, if we have it
 }
 
-export function SubscriptionForm({ planId, planName, price, userId }: SubscriptionFormProps) {
+export function SubscriptionForm({ planId, planName, price, frequency, userId }: SubscriptionFormProps) {
 	const [loading, setLoading] = useState(false);
 	const router = useRouter();
 	const { data: session, status } = useSession();
@@ -44,7 +45,7 @@ export function SubscriptionForm({ planId, planName, price, userId }: Subscripti
 
 		try {
 			if (effectiveUserId) {
-				await createSubscription(effectiveUserId, planId);
+				await createSubscription(effectiveUserId, planId, frequency);
 				toast.success("🎉 Subscription successful! Welcome aboard!");
 				router.push("/management/dashboard"); // Redirect to dashboard
 			} else {

@@ -2,7 +2,6 @@
 
 import { useSidebarToggle } from "@/core/hooks/use-sidebar-toggle";
 import { useStore } from "@/core/hooks/use-store";
-import { AudioRecorder } from "@/components/audio-recorder/audio-recorder";
 
 import { cn } from "@/lib/utils";
 
@@ -36,7 +35,6 @@ export default function DashboardPanelLayout({
         )}
       >
         {children}
-        <AudioRecorder />
       </main>
     </>
   );
