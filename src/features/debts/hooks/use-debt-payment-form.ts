@@ -5,6 +5,7 @@ import { usePayDebt } from "./use-debts-queries";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useRouter } from "next/navigation";
+import { useEffect, useRef } from "react";
 
 const debtPaymentFormSchema = z.object({
   amount: z.coerce
@@ -23,6 +24,7 @@ export const useDebtPaymentForm = (debt: Debt) => {
   const { data: session } = useSession();
   const payDebtMutation = usePayDebt();
   const router = useRouter();
+  const initialDataProcessedRef = useRef(false);
 
   const defaultValues: DebtPaymentFormValues = {
     amount: debt?.pending_amount || 0,
@@ -35,7 +37,43 @@ export const useDebtPaymentForm = (debt: Debt) => {
     resolver: zodResolver(debtPaymentFormSchema),
   });
 
-  const { handleSubmit } = methods;
+  const { handleSubmit, setValue } = methods;
+
+  useEffect(() => {
+    console.log('Initial debt payment form values:', methods.getValues());
+  }, [methods]);
+
+  useEffect(() => {
+    if (initialDataProcessedRef.current) {
+      return;
+    }
+
+    const recommendationData = localStorage.getItem("recommendationAction");
+
+    if (recommendationData) {
+      try {
+        const parsedData = JSON.parse(recommendationData);
+        localStorage.removeItem("recommendationAction");
+        console.log("Pre-filling debt payment form from recommendation:", parsedData);
+
+        if (parsedData.amount) {
+          setValue('amount', parsedData.amount, { shouldValidate: true });
+        }
+
+        if (parsedData.payment_method_id) {
+          setValue('payment_method_id', String(parsedData.payment_method_id), { shouldValidate: true });
+        }
+
+        if (parsedData.description) {
+          setValue('description', parsedData.description, { shouldValidate: true });
+        }
+
+        initialDataProcessedRef.current = true;
+      } catch (error) {
+        console.error("Error parsing recommendation data:", error);
+      }
+    }
+  }, [setValue]);
 
   const onSubmit = handleSubmit((data) => {
     const payment: DebtPayment = {

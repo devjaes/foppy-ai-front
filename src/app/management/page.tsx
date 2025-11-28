@@ -35,12 +35,13 @@ import { PeriodSelector, type PeriodRange } from "@/components/period-selector";
 import { IncomeExpenseChart } from "@/components/charts/income-expense-chart";
 import { CategoryPieChart } from "@/components/charts/category-pie-chart";
 import { TrendLineChart } from "@/components/charts/trend-line-chart";
+import { useRecommendations } from "@/features/recommendations/hooks/use-recommendations";
+import { RecommendationCard } from "@/features/recommendations/presentation/components/recommendation-card";
 
 export default function Page() {
   const { data: session } = useSession();
   const userId = session?.user?.id;
 
-  // Estado para el período seleccionado
   const [selectedPeriod, setSelectedPeriod] = useState<PeriodRange>({
     startDate: startOfMonth(new Date()),
     endDate: endOfMonth(new Date()),
@@ -48,8 +49,6 @@ export default function Page() {
     label: "Mes actual",
   });
 
-  // Obtener datos para el dashboard (balance del período seleccionado)
-  // Formato YYYY-MM-DD para el backend
   const startDateStr = format(selectedPeriod.startDate, "yyyy-MM-dd");
   const endDateStr = format(selectedPeriod.endDate, "yyyy-MM-dd");
 
@@ -59,15 +58,12 @@ export default function Page() {
     endDateStr
   );
 
-  // Usar el período seleccionado para category totals
   const { data: categoryTotals = [], isLoading: isLoadingCategoryTotals } =
     useCategoryTotals(userId!, startDateStr, endDateStr);
 
-  // Obtener presupuestos y filtrar por período
   const { data: allBudgets = [], isLoading: isLoadingBudgets } =
     useFindBudgetUsersById(userId!);
 
-  // Filtrar presupuestos: mostrar los del rango de meses seleccionado
   const budgets = allBudgets.filter((budget) => {
     if (!budget.month) return false;
     const budgetDate = new Date(budget.month);
@@ -77,11 +73,9 @@ export default function Page() {
     );
   });
 
-  // Obtener metas y filtrar por período
   const { data: allGoals = [], isLoading: isLoadingGoals } =
     useFindGoalUsersById(userId!);
 
-  // Filtrar metas: mostrar si están activas O su fecha fin está en el rango
   const goals = allGoals.filter((goal) => {
     const isActive = goal.current_amount < goal.target_amount;
     const endDate = new Date(goal.end_date);
@@ -90,11 +84,9 @@ export default function Page() {
     return isActive || isInPeriod;
   });
 
-  // Obtener deudas y filtrar por período
   const { data: allDebts = [], isLoading: isLoadingDebts } =
     useFindDebtUserById(userId!);
 
-  // Filtrar deudas: mostrar si están pendientes O su vencimiento está en el rango o no tiene vencimiento
   const debts = allDebts.filter((debt) => {
     const isPending = debt.pending_amount > 0;
     const hasDueDate = debt.due_date !== undefined;
@@ -106,12 +98,12 @@ export default function Page() {
     return isPending || isInPeriod;
   });
 
-  // Obtener tendencias mensuales para gráficos
   const { data: monthlyTrends = [], isLoading: isLoadingTrends } =
     useMonthlyTrends(userId!);
 
-  // Preparar datos para el Bar Chart (Ingresos vs Gastos)
-  // Usar solo los meses del período seleccionado
+  const { data: recommendations = [], isLoading: isLoadingRecommendations } =
+    useRecommendations(userId);
+
   const barChartData = monthlyTrends
     .filter((trend) => {
       const trendDate = new Date(trend.month + "-01");
@@ -126,7 +118,6 @@ export default function Page() {
       expense: trend.expense,
     }));
 
-  // Preparar datos para el Pie Chart (Distribución por Categorías)
   const totalExpenses = categoryTotals.reduce((sum, cat) => sum + cat.total, 0);
   const pieChartData = categoryTotals
     .filter((cat) => cat.total > 0)
@@ -136,16 +127,14 @@ export default function Page() {
       percentage: (cat.total / totalExpenses) * 100,
     }))
     .sort((a, b) => b.value - a.value)
-    .slice(0, 5); // Top 5 categorías
+    .slice(0, 5);
 
-  // Preparar datos para el Line Chart (Tendencias - últimos 6 meses)
   const lineChartData = monthlyTrends.slice(-6).map((trend) => ({
     month: format(new Date(trend.month + "-01"), "MMM", { locale: es }),
     income: trend.income,
     expense: trend.expense,
   }));
 
-  // Función para determinar el color de la barra de progreso
   const getProgressColor = (percentage: number, isInverse: boolean = false) => {
     if (isInverse) {
       if (percentage >= 100) return "bg-red-500";
@@ -166,7 +155,8 @@ export default function Page() {
     isLoadingGoals ||
     isLoadingDebts ||
     isLoadingCategoryTotals ||
-    isLoadingTrends;
+    isLoadingTrends ||
+    isLoadingRecommendations;
 
   return (
     <ContentLayout title="Dashboard">
@@ -184,7 +174,20 @@ export default function Page() {
             />
           </div>
 
-          {/* Resumen Financiero */}
+          {recommendations.length > 0 && (
+            <section className="space-y-4">
+              <h2 className="text-xl font-semibold">Recomendaciones para ti</h2>
+              <div className="grid grid-cols-1 gap-4">
+                {recommendations.map((recommendation) => (
+                  <RecommendationCard
+                    key={recommendation.id}
+                    recommendation={recommendation}
+                  />
+                ))}
+              </div>
+            </section>
+          )}
+
           <section className="space-y-4">
             <h2 className="text-xl font-semibold">
               Resumen Financiero de {selectedPeriod.label}
@@ -241,11 +244,9 @@ export default function Page() {
             </div>
           </section>
 
-          {/* Gráficos */}
           <section className="space-y-4">
             <h2 className="text-xl font-semibold">Análisis Gráfico</h2>
 
-            {/* Fila 1: Bar Chart e Pie Chart */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <IncomeExpenseChart
                 data={barChartData}
@@ -257,13 +258,10 @@ export default function Page() {
               />
             </div>
 
-            {/* Fila 2: Line Chart (ancho completo) */}
             <TrendLineChart data={lineChartData} isLoading={isLoadingTrends} />
           </section>
 
-          {/* Metas y Presupuestos */}
           <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Metas */}
             <Card>
               <CardHeader className="pb-2">
                 <div className="flex justify-between items-center">
@@ -314,7 +312,6 @@ export default function Page() {
               </CardContent>
             </Card>
 
-            {/* Presupuestos */}
             <Card>
               <CardHeader className="pb-2">
                 <div className="flex justify-between items-center">
@@ -370,9 +367,7 @@ export default function Page() {
             </Card>
           </section>
 
-          {/* Deudas y Categorías */}
           <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Deudas */}
             <Card>
               <CardHeader className="pb-2">
                 <div className="flex justify-between items-center">
@@ -424,7 +419,6 @@ export default function Page() {
               </CardContent>
             </Card>
 
-            {/* Gastos por Categoría */}
             <CategoryExpensesSummary
               expenses={categoryTotals}
               isLoading={isLoadingCategoryTotals}
@@ -433,7 +427,6 @@ export default function Page() {
             />
           </section>
 
-          {/* Accesos Rápidos */}
           <section>
             <h2 className="text-xl font-semibold mb-4">Acciones Rápidas</h2>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
