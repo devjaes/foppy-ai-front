@@ -36,12 +36,13 @@ import { CategoryStatCard } from "@/components/ui/category-stat-card";
 import { FilterPillGroup } from "@/components/ui/filter-pill-group";
 import { VoiceInputButton } from "@/components/ui/voice-input-button";
 import { cn } from "@/lib/utils";
+import { useRecommendations } from "@/features/recommendations/hooks/use-recommendations";
+import { RecommendationCard } from "@/features/recommendations/presentation/components/recommendation-card";
 
 export default function Page() {
   const { data: session } = useSession();
   const userId = session?.user?.id;
 
-  // Estado para el período seleccionado
   const [selectedPeriod, setSelectedPeriod] = useState<PeriodRange>({
     startDate: startOfMonth(new Date()),
     endDate: endOfMonth(new Date()),
@@ -85,8 +86,25 @@ export default function Page() {
     return isActive || isInPeriod;
   });
 
+  const { data: allDebts = [], isLoading: isLoadingDebts } =
+    useFindDebtUserById(userId!);
+
+  const debts = allDebts.filter((debt) => {
+    const isPending = debt.pending_amount > 0;
+    const hasDueDate = debt.due_date !== undefined;
+    if (!hasDueDate) return isPending;
+
+    const dueDate = new Date(debt.due_date!);
+    const isInPeriod =
+      dueDate >= selectedPeriod.startDate && dueDate <= selectedPeriod.endDate;
+    return isPending || isInPeriod;
+  });
+
   const { data: monthlyTrends = [], isLoading: isLoadingTrends } =
     useMonthlyTrends(userId!);
+
+  const { data: recommendations = [], isLoading: isLoadingRecommendations } =
+    useRecommendations(userId);
 
   const barChartData = monthlyTrends
     .filter((trend) => {
@@ -138,7 +156,8 @@ export default function Page() {
     isLoadingBudgets ||
     isLoadingGoals ||
     isLoadingCategoryTotals ||
-    isLoadingTrends;
+    isLoadingTrends ||
+    isLoadingRecommendations;
 
   return (
     <ContentLayout title="Dashboard" hideHeader>
@@ -151,7 +170,9 @@ export default function Page() {
           {/* Monai-style Header */}
           <div className="pt-4 pb-2">
             <div className="flex justify-between items-start mb-6">
-              <div className="text-sm font-medium text-muted-foreground">Total</div>
+              <div className="text-sm font-medium text-muted-foreground">
+                Total
+              </div>
               <Button variant="ghost" size="icon" className="rounded-full">
                 <Settings className="h-5 w-5" />
               </Button>
@@ -159,7 +180,9 @@ export default function Page() {
 
             <div className="text-6xl font-bold tracking-tighter mb-6">
               {formatCurrency(periodBalance?.balance || 0).replace("$", "")}
-              <span className="text-2xl text-muted-foreground font-normal ml-1">$</span>
+              <span className="text-2xl text-muted-foreground font-normal ml-1">
+                $
+              </span>
             </div>
 
             <div className="flex gap-2 overflow-x-auto no-scrollbar">
@@ -171,11 +194,25 @@ export default function Page() {
               <FilterPillGroup
                 options={[{ value: "private", label: "Private list" }]}
                 value="private"
-                onChange={() => { }}
+                onChange={() => {}}
                 placeholder="List"
               />
             </div>
           </div>
+
+          {recommendations.length > 0 && (
+            <section className="space-y-4">
+              <h2 className="text-xl font-semibold">Recomendaciones para ti</h2>
+              <div className="grid grid-cols-1 gap-4">
+                {recommendations.map((recommendation) => (
+                  <RecommendationCard
+                    key={recommendation.id}
+                    recommendation={recommendation}
+                  />
+                ))}
+              </div>
+            </section>
+          )}
 
           {/* Category Stats Cards */}
           <div className="flex gap-3 overflow-x-auto no-scrollbar pb-2 -mx-4 px-4">
@@ -198,7 +235,9 @@ export default function Page() {
           {/* Transaction List Preview (Simulated with recent activity) */}
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <h2 className="text-sm font-medium text-muted-foreground">Actividad Reciente</h2>
+              <h2 className="text-sm font-medium text-muted-foreground">
+                Actividad Reciente
+              </h2>
               <div className="flex gap-2">
                 <Button variant="ghost" size="icon" className="h-8 w-8">
                   <Search className="h-4 w-4" />
@@ -213,13 +252,18 @@ export default function Page() {
                   <CardTitle className="text-lg">Tendencia</CardTitle>
                 </CardHeader>
                 <CardContent className="px-0">
-                  <TrendLineChart data={lineChartData} isLoading={isLoadingTrends} />
+                  <TrendLineChart
+                    data={lineChartData}
+                    isLoading={isLoadingTrends}
+                  />
                 </CardContent>
               </Card>
 
               <Card className="border-none shadow-none bg-transparent">
                 <CardHeader className="px-0 pt-0">
-                  <CardTitle className="text-lg">Gastos por Categoría</CardTitle>
+                  <CardTitle className="text-lg">
+                    Gastos por Categoría
+                  </CardTitle>
                 </CardHeader>
                 <CardContent className="px-0">
                   <CategoryPieChart
@@ -236,13 +280,24 @@ export default function Page() {
             <section>
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-lg font-semibold">Metas</h2>
-                <Link href="/management/goals" className="text-sm text-primary hover:underline">Ver todas</Link>
+                <Link
+                  href="/management/goals"
+                  className="text-sm text-primary hover:underline"
+                >
+                  Ver todas
+                </Link>
               </div>
               <div className="space-y-4">
                 {goals.slice(0, 3).map((goal) => {
-                  const progressPercentage = Math.min(100, (goal.current_amount / goal.target_amount) * 100);
+                  const progressPercentage = Math.min(
+                    100,
+                    (goal.current_amount / goal.target_amount) * 100
+                  );
                   return (
-                    <div key={goal.id} className="bg-card p-4 rounded-2xl border border-border/50">
+                    <div
+                      key={goal.id}
+                      className="bg-card p-4 rounded-2xl border border-border/50"
+                    >
                       <div className="flex justify-between items-center mb-2">
                         <div className="flex items-center gap-3">
                           <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-xl">
@@ -251,15 +306,24 @@ export default function Page() {
                           <div>
                             <div className="font-medium">{goal.name}</div>
                             <div className="text-xs text-muted-foreground">
-                              {formatCurrency(goal.current_amount)} de {formatCurrency(goal.target_amount)}
+                              {formatCurrency(goal.current_amount)} de{" "}
+                              {formatCurrency(goal.target_amount)}
                             </div>
                           </div>
                         </div>
-                        <div className="text-sm font-bold">{Math.round(progressPercentage)}%</div>
+                        <div className="text-sm font-bold">
+                          {Math.round(progressPercentage)}%
+                        </div>
                       </div>
-                      <Progress value={progressPercentage} className="h-2" indicatorClassName={getProgressColor(progressPercentage)} />
+                      <Progress
+                        value={progressPercentage}
+                        className="h-2"
+                        indicatorClassName={getProgressColor(
+                          progressPercentage
+                        )}
+                      />
                     </div>
-                  )
+                  );
                 })}
                 {goals.length === 0 && (
                   <div className="text-center py-8 text-muted-foreground bg-card/50 rounded-2xl border border-dashed">
@@ -275,35 +339,64 @@ export default function Page() {
             <section>
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-lg font-semibold">Presupuestos</h2>
-                <Link href="/management/budgets" className="text-sm text-primary hover:underline">Ver todos</Link>
+                <Link
+                  href="/management/budgets"
+                  className="text-sm text-primary hover:underline"
+                >
+                  Ver todos
+                </Link>
               </div>
               <div className="space-y-4">
                 {budgets.slice(0, 3).map((budget) => {
-                  const progressPercentage = Math.min(100, (budget.current_amount / budget.limit_amount) * 100);
+                  const progressPercentage = Math.min(
+                    100,
+                    (budget.current_amount / budget.limit_amount) * 100
+                  );
                   return (
-                    <div key={budget.id} className="bg-card p-4 rounded-2xl border border-border/50">
+                    <div
+                      key={budget.id}
+                      className="bg-card p-4 rounded-2xl border border-border/50"
+                    >
                       <div className="flex justify-between items-center mb-2">
                         <div className="flex items-center gap-3">
                           <div className="h-10 w-10 rounded-full bg-accent flex items-center justify-center text-xl">
                             {budget.category?.icon || "💰"}
                           </div>
                           <div>
-                            <div className="font-medium">{budget.category?.name}</div>
+                            <div className="font-medium">
+                              {budget.category?.name}
+                            </div>
                             <div className="text-xs text-muted-foreground">
-                              {formatCurrency(budget.current_amount)} / {formatCurrency(budget.limit_amount)}
+                              {formatCurrency(budget.current_amount)} /{" "}
+                              {formatCurrency(budget.limit_amount)}
                             </div>
                           </div>
                         </div>
                       </div>
-                      <Progress value={progressPercentage} className={cn("h-2", getProgressColor(progressPercentage, true).replace("bg-", "text-"))} indicatorClassName={getProgressColor(progressPercentage, true)} />
+                      <Progress
+                        value={progressPercentage}
+                        className={cn(
+                          "h-2",
+                          getProgressColor(progressPercentage, true).replace(
+                            "bg-",
+                            "text-"
+                          )
+                        )}
+                        indicatorClassName={getProgressColor(
+                          progressPercentage,
+                          true
+                        )}
+                      />
                     </div>
-                  )
+                  );
                 })}
                 {budgets.length === 0 && (
                   <div className="text-center py-8 text-muted-foreground bg-card/50 rounded-2xl border border-dashed">
                     No hay presupuestos
                     <Button variant="link" asChild className="mt-2">
-                      <Link href="/management/budgets/create">Crear presupuesto</Link>
+                      <Link href="/management/budgets/create">
+                        Crear presupuesto
+                      </Link>
                     </Button>
                   </div>
                 )}

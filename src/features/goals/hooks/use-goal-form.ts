@@ -80,28 +80,46 @@ export const useGoalForm = ({ goal }: UseGoalFormProps) => {
   }, []);
 
   useEffect(() => {
-    if (!formData || initialDataProcessedRef.current) {
+    if (initialDataProcessedRef.current) {
       return;
     }
 
-    if (formData.name) {
-      form.setValue('name', formData.name, { shouldValidate: true });
+    const recommendationData = localStorage.getItem("recommendationAction");
+    let dataToProcess = formData;
+
+    if (recommendationData && !goal) {
+      try {
+        const parsedData = JSON.parse(recommendationData);
+        dataToProcess = parsedData;
+        localStorage.removeItem("recommendationAction");
+        console.log("Pre-filling goal form from recommendation:", parsedData);
+      } catch (error) {
+        console.error("Error parsing recommendation data:", error);
+      }
     }
 
-    if (formData.current_amount) {
-      form.setValue('current_amount', formData.current_amount, { shouldValidate: true });
+    if (!dataToProcess) {
+      return;
     }
 
-    if (formData.target_amount) {
-      form.setValue('target_amount', formData.target_amount, { shouldValidate: true });
+    if (dataToProcess.name) {
+      form.setValue('name', dataToProcess.name, { shouldValidate: true });
     }
 
-    if (formData.end_date) {
-      form.setValue('end_date', new Date(formData.end_date), { shouldValidate: true });
+    if (dataToProcess.current_amount) {
+      form.setValue('current_amount', dataToProcess.current_amount, { shouldValidate: true });
     }
 
-    if (formData.category && categories?.length) {
-      const categoryToFind = normalizeString(formData.category);
+    if (dataToProcess.target_amount) {
+      form.setValue('target_amount', dataToProcess.target_amount, { shouldValidate: true });
+    }
+
+    if (dataToProcess.end_date) {
+      form.setValue('end_date', new Date(dataToProcess.end_date), { shouldValidate: true });
+    }
+
+    if (dataToProcess.category && categories?.length) {
+      const categoryToFind = normalizeString(dataToProcess.category);
       const foundCategory = categories.find(category => 
         normalizeString(category.name) === categoryToFind
       );
@@ -111,20 +129,20 @@ export const useGoalForm = ({ goal }: UseGoalFormProps) => {
       }
     }
 
-    if (formData.contribution_frecuency) {
-      form.setValue('contribution_frequency', formData.contribution_frecuency, { shouldValidate: true });
+    if (dataToProcess.contribution_frecuency) {
+      form.setValue('contribution_frequency', dataToProcess.contribution_frecuency, { shouldValidate: true });
     }
 
-    if (formData.category_id) {
-      form.setValue('category_id', formData.category_id, { shouldValidate: true });
+    if (dataToProcess.category_id) {
+      form.setValue('category_id', dataToProcess.category_id, { shouldValidate: true });
     }
 
-    if (formData.contribution_amount) {
-      form.setValue('contribution_amount', formData.contribution_amount, { shouldValidate: true });
+    if (dataToProcess.contribution_amount) {
+      form.setValue('contribution_amount', dataToProcess.contribution_amount, { shouldValidate: true });
     }
 
     initialDataProcessedRef.current = true;
-  }, [formData, categories, form]);
+  }, [formData, categories, form, goal]);
 
   const onSubmit: SubmitHandler<GoalForm> = async (data) => {
     const goalData = {
