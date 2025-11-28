@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils";
 import { Menu } from "./menu";
 import { SidebarToggle } from "./sidebar-toggle";
 import Image from "next/image";
+import { SubscriptionBadge } from "@/features/subscriptions/components/SubscriptionBadge";
 
 export function Sidebar() {
   const sidebar = useStore(useSidebarToggle, (state) => state);
@@ -64,6 +65,7 @@ export function Sidebar() {
           </Link>
         </Button>
         <Menu isOpen={sidebar?.isOpen} />
+        <SubscriptionBadge isOpen={sidebar?.isOpen} />
       </div>
     </aside>
   );

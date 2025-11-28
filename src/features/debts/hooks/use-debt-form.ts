@@ -63,9 +63,14 @@ export const useDebtForm = (debt?: Debt) => {
     }
   });
 
+  const onCancel = () => {
+    window.history.back();
+  };
+
   return {
     methods,
     onSubmit,
+    onCancel,
     isLoading: createDebtMutation.isPending || updateDebtMutation.isPending,
     isError: createDebtMutation.isError || updateDebtMutation.isError,
     error: createDebtMutation.error || updateDebtMutation.error,
