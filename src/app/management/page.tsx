@@ -57,7 +57,7 @@ export default function Page() {
   const { data: periodBalance, isLoading: isLoadingBalance } = usePeriodBalance(
     userId!,
     startDateStr,
-    endDateStr
+    endDateStr,
   );
 
   const { data: categoryTotals = [], isLoading: isLoadingCategoryTotals } =
@@ -160,7 +160,7 @@ export default function Page() {
     isLoadingRecommendations;
 
   return (
-    <ContentLayout title="Dashboard" hideHeader>
+    <ContentLayout title="Dashboard">
       {isLoading ? (
         <div className="flex justify-center items-center min-h-[400px]">
           <LoadingSpinner className="h-8 w-8" />
@@ -291,7 +291,7 @@ export default function Page() {
                 {goals.slice(0, 3).map((goal) => {
                   const progressPercentage = Math.min(
                     100,
-                    (goal.current_amount / goal.target_amount) * 100
+                    (goal.current_amount / goal.target_amount) * 100,
                   );
                   return (
                     <div
@@ -319,7 +319,7 @@ export default function Page() {
                         value={progressPercentage}
                         className="h-2"
                         indicatorClassName={getProgressColor(
-                          progressPercentage
+                          progressPercentage,
                         )}
                       />
                     </div>
@@ -350,7 +350,7 @@ export default function Page() {
                 {budgets.slice(0, 3).map((budget) => {
                   const progressPercentage = Math.min(
                     100,
-                    (budget.current_amount / budget.limit_amount) * 100
+                    (budget.current_amount / budget.limit_amount) * 100,
                   );
                   return (
                     <div
@@ -379,12 +379,12 @@ export default function Page() {
                           "h-2",
                           getProgressColor(progressPercentage, true).replace(
                             "bg-",
-                            "text-"
-                          )
+                            "text-",
+                          ),
                         )}
                         indicatorClassName={getProgressColor(
                           progressPercentage,
-                          true
+                          true,
                         )}
                       />
                     </div>
