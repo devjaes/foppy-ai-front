@@ -74,27 +74,46 @@ export const useBudgetForm = ({ budget }: UseBudgetFormProps) => {
   }, [form]);
 
   useEffect(() => {
-    if (!formData || initialDataProcessedRef.current)
+    if (initialDataProcessedRef.current) {
       return;
-
-    if (formData.category_id) {
-      form.setValue('category_id', formData.category_id, { shouldValidate: true });
     }
 
-    if (formData.limit_amount) {
-      form.setValue('limit_amount', formData.limit_amount, { shouldValidate: true });
+    const recommendationData = localStorage.getItem("recommendationAction");
+    let dataToProcess = formData;
+
+    if (recommendationData && !budget) {
+      try {
+        const parsedData = JSON.parse(recommendationData);
+        dataToProcess = parsedData;
+        localStorage.removeItem("recommendationAction");
+        console.log("Pre-filling budget form from recommendation:", parsedData);
+      } catch (error) {
+        console.error("Error parsing recommendation data:", error);
+      }
     }
 
-    if (formData.current_amount !== undefined) {
-      form.setValue('current_amount', formData.current_amount, { shouldValidate: true });
+    if (!dataToProcess) {
+      return;
     }
 
-    if (formData.month) {
-      form.setValue('month', new Date(formData.month), { shouldValidate: true });
+    if (dataToProcess.category_id) {
+      form.setValue('category_id', dataToProcess.category_id, { shouldValidate: true });
+    }
+
+    if (dataToProcess.limit_amount) {
+      form.setValue('limit_amount', dataToProcess.limit_amount, { shouldValidate: true });
+    }
+
+    if (dataToProcess.current_amount !== undefined) {
+      form.setValue('current_amount', dataToProcess.current_amount, { shouldValidate: true });
+    }
+
+    if (dataToProcess.month) {
+      form.setValue('month', new Date(dataToProcess.month), { shouldValidate: true });
     }
     
     initialDataProcessedRef.current = true;
-  }, [formData, form]);
+  }, [formData, form, budget]);
 
   const onSubmit: SubmitHandler<BudgetForm> = async (data) => {
     if (!session?.user?.id) return;

@@ -36,7 +36,7 @@ const RecoveryForm = () => {
               Inicia sesión
             </Link>
             <Button disabled={isSubmiting} type="submit">
-              {isSubmiting ? <LoadingSpinner /> : "Enviar email"}
+              {isSubmiting ? <LoadingSpinner /> : "Restablecer contraseña"}
             </Button>
           </div>
         </form>

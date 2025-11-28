@@ -53,11 +53,11 @@ export function useAuthOperations() {
     }
   };
 
-  const emailGenderHandler = async (data: EmailGender) => {
+  const forgotPasswordHandler = async (data: EmailGender) => {
     try {
-      const res = await authDatasource.emailGender(data);
+      const res = await authDatasource.forgotPassword(data);
       toast.success(res);
-      router.push("/login");
+      toast.info("Revisa tu correo electrónico para continuar");
     } catch (error) {
       console.error(error);
     }
@@ -73,20 +73,23 @@ export function useAuthOperations() {
     }
   };
 
-  const recoveryPasswordHandler = async (
+  const resetPasswordHandler = async (
     data: Omit<Recovery, "resetPasswordToken">
   ) => {
     try {
-      const token = searchParams.get("reset_password_token");
+      const token = searchParams.get("token");
       if (!token) {
-        toast.error("El token de reseteo no ha sido probehido");
+        toast.error("Token inválido o no proporcionado");
         return;
       }
-      const res = await AuthService.getInstance().recoveryPassword({
+      const res = await authDatasource.resetPassword({
         ...data,
         resetPasswordToken: token,
       });
       toast.success(res);
+      setTimeout(() => {
+        router.push("/login");
+      }, 1500);
     } catch (error) {
       console.error(error);
     }
@@ -95,8 +98,8 @@ export function useAuthOperations() {
   return {
     loginHandler,
     registerHandler,
-    emailGenderHandler,
+    forgotPasswordHandler,
     logoutHandler,
-    recoveryPasswordHandler,
+    resetPasswordHandler,
   };
 }
