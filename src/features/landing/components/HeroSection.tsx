@@ -1,8 +1,12 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Sparkles, TrendingUp, Shield, Zap, Users, Star } from "lucide-react";
+import { useSession } from "next-auth/react";
 
 export function HeroSection() {
+	const { data: session } = useSession();
 	return (
 		<section className="relative py-20 md:py-32 overflow-hidden bg-background justify-center">
 			{/* Animated background elements */}
@@ -48,7 +52,9 @@ export function HeroSection() {
 							className="text-lg px-10 py-7 rounded-full border-2 hover:bg-primary/5 transition-all duration-300 hover:scale-105"
 							asChild
 						>
-							<Link href="/login">Inicia Sesión</Link>
+							<Link href={session ? "/management" : "/login"}>
+								{session ? "Ir al Dashboard" : "Inicia Sesión"}
+							</Link>
 						</Button>
 					</div>
 

@@ -22,6 +22,7 @@ type Menu = {
   active: boolean;
   icon: LucideIcon;
   submenus: Submenu[];
+  requiresPremium?: boolean; // New field to mark premium features
 };
 
 type Group = {
@@ -29,7 +30,14 @@ type Group = {
   menus: Menu[];
 };
 
-export const getAllMenuList = (pathname: string) => {
+export type UserSubscription = {
+  plan?: {
+    name: string;
+  } | null;
+  active: boolean;
+} | null;
+
+export const getAllMenuList = (pathname: string, subscription?: UserSubscription) => {
   const allMenus: Group[] = [
     {
       groupLabel: "Módulos",
@@ -83,6 +91,7 @@ export const getAllMenuList = (pathname: string) => {
           active: pathname.startsWith("/management/reports/create"),
           icon: FileText,
           submenus: [],
+          requiresPremium: true, // Mark reports as premium feature
         },
         {
           href: "/management/profile",
@@ -94,5 +103,18 @@ export const getAllMenuList = (pathname: string) => {
       ],
     },
   ];
+
+  // Check if user has a basic plan
+  const hasLitePlan = subscription?.plan?.name?.toLowerCase().includes('lite');
+  
+  // Filter out premium features if user has basic plan
+  if (hasLitePlan) {
+    return allMenus.map(group => ({
+      ...group,
+      menus: group.menus.filter(menu => !menu.requiresPremium)
+    }));
+  }
+
   return allMenus;
 };
+

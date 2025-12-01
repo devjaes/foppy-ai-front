@@ -60,8 +60,8 @@ export function SubscriptionBadge({ isOpen }: SubscriptionBadgeProps) {
 							<Progress value={progress} className="h-1.5 bg-yellow-500/10" indicatorClassName="bg-yellow-500" />
 						</div>
 						<Button size="sm" className="w-full h-8 text-xs bg-yellow-600 hover:bg-yellow-700 text-white border-0" asChild>
-							<Link href="/subscribe?planId=2">
-								Actualizar Plan
+							<Link href="/#plans">
+								Ver Planes
 							</Link>
 						</Button>
 					</div>

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useSession } from "next-auth/react";
 
 import { Ellipsis } from "lucide-react";
 
@@ -17,6 +18,7 @@ import { cn } from "@/lib/utils";
 
 import { CollapseMenuButton } from "./collapse-menu-button";
 import { getAllMenuList } from "@/lib/menu-list";
+import { useSubscription } from "@/features/subscriptions/hooks/use-subscription";
 
 interface MenuProps {
   isOpen: boolean | undefined;
@@ -24,7 +26,12 @@ interface MenuProps {
 
 export function Menu({ isOpen }: MenuProps) {
   const pathname = usePathname();
-  const menuList = getAllMenuList(pathname);
+  const { data: session } = useSession();
+  const userId = session?.user?.id;
+  const { data: response } = useSubscription(userId);
+  const subscription = response?.data;
+
+  const menuList = getAllMenuList(pathname, subscription);
 
   return (
     <nav className="h-full w-full">
