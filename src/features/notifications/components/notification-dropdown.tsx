@@ -37,6 +37,10 @@ export const NotificationDropdown = () => {
   const { data: recommendations = [], isLoading: isLoadingRecommendations } =
     useRecommendations();
 
+  // Limit displayed notifications in dropdown to most recent 20
+  const displayedNotifications = notifications.slice(0, 20);
+  const hasMoreNotifications = notifications.length > 20;
+
   const getNotificationIcon = (type: NotificationType) => {
     switch (type) {
       case NotificationType.GOAL:
@@ -165,7 +169,7 @@ export const NotificationDropdown = () => {
                     </span>
                   </div>
                 )}
-                {notifications.map((notification) => (
+                {displayedNotifications.map((notification) => (
                   <div key={notification.id}>
                     <DropdownMenuItem
                       className={cn(
@@ -202,6 +206,16 @@ export const NotificationDropdown = () => {
                     <Separator />
                   </div>
                 ))}
+                {hasMoreNotifications && (
+                  <div className="py-2 px-3 text-center">
+                    <p className="text-xs text-muted-foreground">
+                      Mostrando las 20 notificaciones más recientes
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {notifications.length - 20} notificaciones más antiguas no mostradas
+                    </p>
+                  </div>
+                )}
               </>
             )}
           </ScrollArea>
