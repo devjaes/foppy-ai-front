@@ -175,9 +175,8 @@ export function PlansSection() {
 
 						{[
 							{ name: "Entrada de voz", basic: true, plus: true },
-							{ name: "Aplicación móvil", basic: true, plus: true },
+							{ name: "Categorías personalizadas", basic: true, plus: true },
 							{ name: "Informes avanzados", basic: false, plus: true },
-							{ name: "Categorías personalizadas", basic: false, plus: true },
 							{ name: "Alertas de presupuesto", basic: false, plus: true },
 							{ name: "Soporte prioritario", basic: false, plus: true },
 						].map((feature, idx) => (
