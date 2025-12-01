@@ -47,7 +47,7 @@ export function SubscriptionForm({ planId, planName, price, frequency, userId }:
 			if (effectiveUserId) {
 				await createSubscription(effectiveUserId, planId, frequency);
 				toast.success("🎉 Subscription successful! Welcome aboard!");
-				router.push("/management/dashboard"); // Redirect to dashboard
+				router.push("/management"); // Redirect to dashboard
 			} else {
 				// If no user, redirect to login
 				toast.error("Please log in to complete subscription");
