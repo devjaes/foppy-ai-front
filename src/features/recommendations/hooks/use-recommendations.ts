@@ -8,10 +8,10 @@ const RECOMMENDATIONS_KEY = ["recommendations"];
 
 export const useRecommendations = (userId?: string) => {
   return useQuery({
-    queryKey: RECOMMENDATIONS_KEY,
+    queryKey: [...RECOMMENDATIONS_KEY, userId], // Include userId in cache key
     queryFn: () => recommendationService.getPending(userId),
     staleTime: 60 * 1000,
-    refetchInterval: 5 * 60 * 1000,
+    refetchInterval: 5 * 60 * 1000, // Poll every 5 minutes
     enabled: !!userId,
   });
 };

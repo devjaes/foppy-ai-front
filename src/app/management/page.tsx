@@ -9,14 +9,6 @@ import { useFindBudgetUsersById } from "@/features/budgets/hooks/use-budgets-que
 import { useFindGoalUsersById } from "@/features/goals/hooks/use-goals-queries";
 import { useFindDebtUserById } from "@/features/debts/hooks/use-debts-queries";
 import { Button } from "@/components/ui/button";
-import {
-  Wallet,
-  Target,
-  TrendingUp,
-  PiggyBank,
-  Search,
-  Settings,
-} from "lucide-react";
 import { formatCurrency } from "@/lib/format-currency";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
@@ -29,7 +21,6 @@ import {
 } from "@/features/transactions/hooks/use-transactions-queries";
 import { startOfMonth, endOfMonth } from "date-fns";
 import { PeriodSelector, type PeriodRange } from "@/components/period-selector";
-import { IncomeExpenseChart } from "@/components/charts/income-expense-chart";
 import { CategoryPieChart } from "@/components/charts/category-pie-chart";
 import { TrendLineChart } from "@/components/charts/trend-line-chart";
 import { CategoryStatCard } from "@/components/ui/category-stat-card";
@@ -57,7 +48,7 @@ export default function Page() {
   const { data: periodBalance, isLoading: isLoadingBalance } = usePeriodBalance(
     userId!,
     startDateStr,
-    endDateStr,
+    endDateStr
   );
 
   const { data: categoryTotals = [], isLoading: isLoadingCategoryTotals } =
@@ -173,9 +164,6 @@ export default function Page() {
               <div className="text-sm font-medium text-muted-foreground">
                 Total
               </div>
-              <Button variant="ghost" size="icon" className="rounded-full">
-                <Settings className="h-5 w-5" />
-              </Button>
             </div>
 
             <div className="text-6xl font-bold tracking-tighter mb-6">
@@ -238,11 +226,6 @@ export default function Page() {
               <h2 className="text-sm font-medium text-muted-foreground">
                 Actividad Reciente
               </h2>
-              <div className="flex gap-2">
-                <Button variant="ghost" size="icon" className="h-8 w-8">
-                  <Search className="h-4 w-4" />
-                </Button>
-              </div>
             </div>
 
             {/* Charts Section - Collapsible or simplified */}
@@ -291,7 +274,7 @@ export default function Page() {
                 {goals.slice(0, 3).map((goal) => {
                   const progressPercentage = Math.min(
                     100,
-                    (goal.current_amount / goal.target_amount) * 100,
+                    (goal.current_amount / goal.target_amount) * 100
                   );
                   return (
                     <div
@@ -319,7 +302,7 @@ export default function Page() {
                         value={progressPercentage}
                         className="h-2"
                         indicatorClassName={getProgressColor(
-                          progressPercentage,
+                          progressPercentage
                         )}
                       />
                     </div>
@@ -350,7 +333,7 @@ export default function Page() {
                 {budgets.slice(0, 3).map((budget) => {
                   const progressPercentage = Math.min(
                     100,
-                    (budget.current_amount / budget.limit_amount) * 100,
+                    (budget.current_amount / budget.limit_amount) * 100
                   );
                   return (
                     <div
@@ -379,12 +362,12 @@ export default function Page() {
                           "h-2",
                           getProgressColor(progressPercentage, true).replace(
                             "bg-",
-                            "text-",
-                          ),
+                            "text-"
+                          )
                         )}
                         indicatorClassName={getProgressColor(
                           progressPercentage,
-                          true,
+                          true
                         )}
                       />
                     </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { X, AlertCircle, Lightbulb, Target, CreditCard } from "lucide-react";
 import {
@@ -65,12 +65,17 @@ export function RecommendationCard({
   const markViewed = useMarkAsViewed();
   const markDismissed = useMarkAsDismissed();
   const markActed = useMarkAsActed();
+  
+  // Track if this recommendation was already marked as viewed to prevent loops
+  const hasMarkedViewed = useRef(false);
 
   useEffect(() => {
-    if (recommendation.status === "PENDING") {
+    // Only mark as viewed once and only if it's PENDING
+    if (recommendation.status === "PENDING" && !hasMarkedViewed.current) {
+      hasMarkedViewed.current = true;
       markViewed.mutate(recommendation.id);
     }
-  }, [recommendation.id, recommendation.status, markViewed]);
+  }, [recommendation.id, recommendation.status]); // Removed markViewed from dependencies to prevent loop
 
   const handleQuickAction = (action: QuickAction) => {
     markActed.mutate(recommendation.id);
