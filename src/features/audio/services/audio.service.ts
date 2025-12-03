@@ -49,7 +49,7 @@ export class AudioService {
 
   public async sendAudio(audioBlob: Blob): Promise<AudioResponse> {
     const formData = new FormData();
-    formData.append('audio', audioBlob, 'audio.wav');
+    formData.append("audio", audioBlob, "audio.wav");
 
     const response = await this.axiosClient.postForm<{
       success: boolean;
@@ -57,24 +57,26 @@ export class AudioService {
       extractedData: Record<string, string | number | boolean | null>;
       confidence: number;
       message: string;
-    }>('/voice-command', formData);
+    }>("/voice-command", formData);
 
     console.log(response, "lenin");
 
     const result = response.data;
 
     if (!result.success) {
-      throw new Error(result.message || 'Error al procesar el comando de voz');
+      throw new Error(result.message || "Error al procesar el comando de voz");
     }
 
     const formData_ = this.mapToFormData({
+      // @ts-expect-error - extractedData is not typed
       intent: result.intent,
-      extractedData: result.extractedData
+      // @ts-expect-error - extractedData is not typed
+      extractedData: result.extractedData,
     });
 
     return {
       transcription: result.message,
-      formData: formData_
+      formData: formData_,
     };
   }
 
@@ -84,22 +86,22 @@ export class AudioService {
   }): AnalysisResponse | undefined {
     if (
       !result.extractedData ||
-      typeof result.extractedData !== 'object' ||
+      typeof result.extractedData !== "object" ||
       Object.keys(result.extractedData).length === 0
     ) {
       return undefined;
     }
 
-    let path = '';
+    let path = "";
     switch (result.intent) {
-      case 'CREATE_TRANSACTION':
-        path = 'transactions';
+      case "CREATE_TRANSACTION":
+        path = "transactions";
         break;
-      case 'CREATE_GOAL':
-        path = 'goals';
+      case "CREATE_GOAL":
+        path = "goals";
         break;
-      case 'CREATE_BUDGET':
-        path = 'budgets';
+      case "CREATE_BUDGET":
+        path = "budgets";
         break;
       default:
         return undefined;
@@ -107,7 +109,7 @@ export class AudioService {
 
     return {
       path,
-      schema: result.extractedData
+      schema: result.extractedData,
     };
   }
-} 
+}

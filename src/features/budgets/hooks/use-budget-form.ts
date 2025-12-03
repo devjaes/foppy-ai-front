@@ -70,7 +70,7 @@ export const useBudgetForm = ({ budget }: UseBudgetFormProps) => {
   });
 
   useEffect(() => {
-    console.log('Initial budget form values:', form.getValues());
+    console.log("Initial budget form values:", form.getValues());
   }, [form]);
 
   useEffect(() => {
@@ -97,21 +97,29 @@ export const useBudgetForm = ({ budget }: UseBudgetFormProps) => {
     }
 
     if (dataToProcess.category_id) {
-      form.setValue('category_id', dataToProcess.category_id, { shouldValidate: true });
+      form.setValue("category_id", dataToProcess.category_id, {
+        shouldValidate: true,
+      });
     }
 
     if (dataToProcess.limit_amount) {
-      form.setValue('limit_amount', dataToProcess.limit_amount, { shouldValidate: true });
+      form.setValue("limit_amount", dataToProcess.limit_amount, {
+        shouldValidate: true,
+      });
     }
 
     if (dataToProcess.current_amount !== undefined) {
-      form.setValue('current_amount', dataToProcess.current_amount, { shouldValidate: true });
+      form.setValue("current_amount", dataToProcess.current_amount, {
+        shouldValidate: true,
+      });
     }
 
     if (dataToProcess.month) {
-      form.setValue('month', new Date(dataToProcess.month), { shouldValidate: true });
+      form.setValue("month", new Date(dataToProcess.month), {
+        shouldValidate: true,
+      });
     }
-    
+
     initialDataProcessedRef.current = true;
   }, [formData, form, budget]);
 

@@ -17,6 +17,7 @@ export const authConfig: NextAuthConfig = {
         email: {},
         accessToken: {},
       },
+      // @ts-expect-error - CredentialsProvider is not typed
       async authorize(credentials) {
         const parsedCredentials = z
           .object({

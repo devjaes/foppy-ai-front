@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { z } from "zod";
 import { useAuthOperations } from "./use-auth-operations";
+import { Register } from "../interfaces/auth.interface";
 
 const schema = z.object({
   name: z.string().min(1, "El nombre es requerido"),
@@ -36,7 +37,7 @@ export function useRegister() {
   });
 
   const onSubmit: SubmitHandler<FormFields> = async (data) => {
-    await registerHandler(data);
+    await registerHandler(data as Register);
   };
 
   return {

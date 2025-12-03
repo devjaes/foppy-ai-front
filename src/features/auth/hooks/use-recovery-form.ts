@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { z } from "zod";
 import { useAuthOperations } from "./use-auth-operations";
+import { Recovery } from "../interfaces/recovery.interface";
 
 const schema = z
   .object({
@@ -36,7 +37,7 @@ export function useRecoveryForm() {
   });
 
   const onSubmit: SubmitHandler<FormFields> = async (data) => {
-    await resetPasswordHandler(data);
+    await resetPasswordHandler(data as Omit<Recovery, "resetPasswordToken">);
   };
 
   return { onSubmit, methods, isSubmiting: methods.formState.isSubmitting };

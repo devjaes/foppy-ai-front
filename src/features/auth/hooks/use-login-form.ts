@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { z } from "zod";
 import { useAuthOperations } from "./use-auth-operations";
+import { Login } from "../interfaces/auth.interface";
 
 const schema = z.object({
   email: z
@@ -32,7 +33,7 @@ export function useLoginForm() {
   });
 
   const onSubmit: SubmitHandler<FormFields> = async (data) => {
-    await loginHandler(data);
+    await loginHandler(data as Login);
   };
 
   return { onSubmit, methods, isSubmiting: methods.formState.isSubmitting };

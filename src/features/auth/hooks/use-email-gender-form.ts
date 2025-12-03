@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { z } from "zod";
 import { useAuthOperations } from "./use-auth-operations";
+import { EmailGender } from "../interfaces/email-gender.interface";
 
 const schema = z.object({
   email: z
@@ -24,7 +25,7 @@ export function useEmailGenderForm() {
   });
 
   const onSubmit: SubmitHandler<FormFields> = async (data) => {
-    await forgotPasswordHandler(data);
+    await forgotPasswordHandler(data as EmailGender);
   };
 
   return { onSubmit, methods, isSubmiting: methods.formState.isSubmitting };
