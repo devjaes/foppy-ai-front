@@ -179,12 +179,6 @@ export default function Page() {
                 onChange={setSelectedPeriod}
                 variant="pill"
               />
-              <FilterPillGroup
-                options={[{ value: "private", label: "Private list" }]}
-                value="private"
-                onChange={() => {}}
-                placeholder="List"
-              />
             </div>
           </div>
 
