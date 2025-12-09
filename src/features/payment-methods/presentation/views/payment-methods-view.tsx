@@ -1,7 +1,7 @@
 "use client";
 
 import { ContentLayout } from "@/core/layout/content/content-layout";
-import { useFindAllPaymentMethods } from "../../hooks/use-payment-methods-queries";
+import { useFindUserPaymentMethods } from "../../hooks/use-payment-methods-queries";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { Plus } from "lucide-react";
@@ -9,10 +9,14 @@ import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { PaymentMethodsList } from "../components/payment-methods-list";
 import { useDeletePaymentMethod } from "../../hooks/use-payment-methods-queries";
 import { useState } from "react";
+import { useSession } from "next-auth/react";
 
 export default function PaymentMethodsView() {
   const router = useRouter();
-  const { data: paymentMethods = [], isLoading } = useFindAllPaymentMethods();
+  const { data: session } = useSession();
+  const { data: paymentMethods = [], isLoading } = useFindUserPaymentMethods(
+    session?.user?.id?.toString() || ""
+  );
   const deletePaymentMethod = useDeletePaymentMethod();
   const [deletingId, setDeletingId] = useState<number | null>(null);
 

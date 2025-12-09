@@ -9,12 +9,13 @@ import { Button } from "@/components/ui/button";
 import { Budget } from "../../interfaces/budgets.interface";
 import { formatCurrency } from "@/lib/format-currency";
 import RHFSelect from "@/components/rhf/RHFSelect";
-import { useFindAllPaymentMethods } from "@/features/payment-methods/hooks/use-payment-methods-queries";
+import { useFindUserPaymentMethods } from "@/features/payment-methods/hooks/use-payment-methods-queries";
 import { useCategories } from "@/features/categories/hooks/use-categories-queries";
 import { TRANSACTION_TYPES } from "@/features/transactions/interfaces/transactions.interface";
 import { Badge } from "@/components/ui/badge";
 import { Category } from "@/features/categories/interfaces/categories.interface";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 
 interface BudgetTransactionFormProps {
   budget: Budget;
@@ -23,8 +24,11 @@ interface BudgetTransactionFormProps {
 export default function BudgetTransactionForm({
   budget,
 }: BudgetTransactionFormProps) {
+  const { data: session } = useSession();
   const { methods, onSubmit, isLoading } = useBudgetTransactionForm(budget);
-  const { data: paymentMethods = [] } = useFindAllPaymentMethods();
+  const { data: paymentMethods = [] } = useFindUserPaymentMethods(
+    session?.user?.id?.toString() || ""
+  );
   const { data: categories = [] } = useCategories();
   const router = useRouter();
 

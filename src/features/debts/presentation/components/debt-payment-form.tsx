@@ -9,8 +9,9 @@ import { Button } from "@/components/ui/button";
 import { Debt } from "../../interfaces/debts.interface";
 import { formatCurrency } from "@/lib/format-currency";
 import RHFSelect from "@/components/rhf/RHFSelect";
-import { useFindAllPaymentMethods } from "@/features/payment-methods/hooks/use-payment-methods-queries";
+import { useFindUserPaymentMethods } from "@/features/payment-methods/hooks/use-payment-methods-queries";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 
 interface DebtPaymentFormProps {
   debt: Debt;
@@ -18,8 +19,11 @@ interface DebtPaymentFormProps {
 
 export default function DebtPaymentForm({ debt }: DebtPaymentFormProps) {
   const router = useRouter();
+  const { data: session } = useSession();
   const { methods, onSubmit, isLoading } = useDebtPaymentForm(debt);
-  const { data: paymentMethods = [] } = useFindAllPaymentMethods();
+  const { data: paymentMethods = [] } = useFindUserPaymentMethods(
+    session?.user?.id?.toString() || ""
+  );
 
   const paymentMethodOptions = paymentMethods.map((method) => ({
     value: method.id.toString(),

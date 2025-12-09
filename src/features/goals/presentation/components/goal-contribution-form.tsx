@@ -8,9 +8,10 @@ import { Button } from "@/components/ui/button";
 import { Goal } from "../../interfaces/ goals.interface";
 import { formatCurrency } from "@/lib/format-currency";
 import RHFSelect from "@/components/rhf/RHFSelect";
-import { useFindAllPaymentMethods } from "@/features/payment-methods/hooks/use-payment-methods-queries";
+import { useFindUserPaymentMethods } from "@/features/payment-methods/hooks/use-payment-methods-queries";
 import { useGoalContributionForm } from "../../hooks/use-goal-contribution-form";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 
 interface GoalContributionFormProps {
   goal: Goal;
@@ -20,8 +21,11 @@ export default function GoalContributionForm({
   goal,
 }: GoalContributionFormProps) {
   const router = useRouter();
+  const { data: session } = useSession();
   const { methods, onSubmit, isLoading } = useGoalContributionForm(goal);
-  const { data: paymentMethods = [] } = useFindAllPaymentMethods();
+  const { data: paymentMethods = [] } = useFindUserPaymentMethods(
+    session?.user?.id?.toString() || ""
+  );
 
   const paymentMethodOptions = paymentMethods.map((method) => ({
     value: method.id.toString(),

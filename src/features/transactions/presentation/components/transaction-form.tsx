@@ -9,7 +9,7 @@ import {
   Transaction,
   TRANSACTION_TYPES,
 } from "../../interfaces/transactions.interface";
-import { useFindAllPaymentMethods } from "@/features/payment-methods/hooks/use-payment-methods-queries";
+import { useFindUserPaymentMethods } from "@/features/payment-methods/hooks/use-payment-methods-queries";
 import { TapToInput } from "@/components/ui/tap-to-input";
 import { CategoryPillSelector } from "@/components/ui/category-pill-selector";
 import { VoiceInputButton } from "@/components/ui/voice-input-button";
@@ -17,17 +17,26 @@ import { FilterPillGroup } from "@/components/ui/filter-pill-group";
 import { formatCurrency } from "@/lib/format-currency";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
+import { useSession } from "next-auth/react";
 
 interface TransactionFormProps {
   transaction?: Transaction;
 }
 
 export default function TransactionForm({ transaction }: TransactionFormProps) {
-  const { form, onSubmit, onCancel, isSubmitting, categories, isLoadingCategories } = useTransactionForm({
+  const { data: session } = useSession();
+  const {
+    form,
+    onSubmit,
+    onCancel,
+    isSubmitting,
+    categories,
+    isLoadingCategories,
+  } = useTransactionForm({
     transaction,
   });
   const { data: paymentMethods, isLoading: isLoadingPaymentMethods } =
-    useFindAllPaymentMethods();
+    useFindUserPaymentMethods(session?.user?.id?.toString() || "");
 
   if (isLoadingCategories || isLoadingPaymentMethods) {
     return (
@@ -37,26 +46,32 @@ export default function TransactionForm({ transaction }: TransactionFormProps) {
     );
   }
 
-  const categoryOptions = categories?.map((category) => ({
-    id: category.id,
-    name: category.name,
-    icon: category.icon || "🛒",
-  })) || [];
+  const categoryOptions =
+    categories?.map((category) => ({
+      id: category.id,
+      name: category.name,
+      icon: category.icon || "🛒",
+    })) || [];
 
-  const paymentMethodOptions = paymentMethods?.map((pm) => ({
-    value: pm.id,
-    label: pm.name,
-  })) || [];
+  const paymentMethodOptions =
+    paymentMethods?.map((pm) => ({
+      value: pm.id,
+      label: pm.name,
+    })) || [];
 
-  const typeOptions = TRANSACTION_TYPES.map(type => ({
+  const typeOptions = TRANSACTION_TYPES.map((type) => ({
     value: type.value,
-    label: type.label
+    label: type.label,
   }));
 
   const dateOptions = [
     { value: "today", label: "Hoy" },
     { value: "yesterday", label: "Ayer" },
-    { value: "custom", label: "Otro día", icon: <CalendarIcon className="w-3 h-3" /> },
+    {
+      value: "custom",
+      label: "Otro día",
+      icon: <CalendarIcon className="w-3 h-3" />,
+    },
   ];
 
   const handleDateFilterChange = (val: string | number) => {
@@ -71,8 +86,6 @@ export default function TransactionForm({ transaction }: TransactionFormProps) {
       // For custom, we'll let the user tap the date input
     }
   };
-
-
 
   return (
     <FormProvider {...form}>
@@ -102,13 +115,19 @@ export default function TransactionForm({ transaction }: TransactionFormProps) {
             <FilterPillGroup
               options={typeOptions}
               value={form.watch("type")}
-              onChange={(val) => form.setValue("type", val as any, { shouldValidate: true })}
+              onChange={(val) =>
+                form.setValue("type", val as any, { shouldValidate: true })
+              }
               placeholder="Tipo"
             />
             <FilterPillGroup
               options={paymentMethodOptions}
               value={form.watch("payment_method_id")}
-              onChange={(val) => form.setValue("payment_method_id", Number(val), { shouldValidate: true })}
+              onChange={(val) =>
+                form.setValue("payment_method_id", Number(val), {
+                  shouldValidate: true,
+                })
+              }
               placeholder="Método de Pago"
             />
           </div>
@@ -147,7 +166,9 @@ export default function TransactionForm({ transaction }: TransactionFormProps) {
               name="date"
               label="Fecha Seleccionada"
               type="date"
-              formatValue={(val) => format(new Date(val), "EEEE, d 'de' MMMM", { locale: es })}
+              formatValue={(val) =>
+                format(new Date(val), "EEEE, d 'de' MMMM", { locale: es })
+              }
             />
           </div>
         </div>
@@ -161,7 +182,11 @@ export default function TransactionForm({ transaction }: TransactionFormProps) {
           size="icon"
           className="fixed bottom-6 right-24 h-14 w-14 rounded-full shadow-lg z-40 bg-green-600 hover:bg-green-700 text-white animate-fade-in"
         >
-          {isSubmitting ? <LoadingSpinner className="text-white" /> : <Save className="h-6 w-6" />}
+          {isSubmitting ? (
+            <LoadingSpinner className="text-white" />
+          ) : (
+            <Save className="h-6 w-6" />
+          )}
         </Button>
       </form>
     </FormProvider>
