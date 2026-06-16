@@ -1,36 +1,66 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Foppy AI — Frontend
 
-## Getting Started
+> Voice-first personal finance AI — Next.js client that captures Spanish speech and renders agent responses for transactions, goals, and budgets.
 
-First, run the development server:
+## Problem
+
+Logging expenses by hand is tedious enough that most people stop doing it. Foppy AI offers a Spanish-language voice interface so a user can capture a transaction, savings goal, or budget in a single spoken sentence — and see the structured result back in the UI.
+
+## Approach
+
+The client records audio in the browser via `MediaRecorder`, encodes it (WAV / MP3), and posts it to the Foppy AI backend. The backend transcribes with Whisper, routes intent with GPT-4o-mini, and returns structured data which the client renders for user confirmation. Auth is handled with NextAuth (Credentials provider against the backend), and server state is managed with TanStack Query plus a thin Zustand layer.
+
+## Stack
+
+| Layer | Tech |
+|---|---|
+| Framework | Next.js 14.2 (App Router, React 18 Server Components) |
+| Language | TypeScript 5 |
+| Styles | Tailwind CSS 3.4 + shadcn/ui + Radix primitives |
+| Auth | NextAuth 5 (beta) — Credentials provider |
+| Data | TanStack Query 5, Axios, Socket.IO client, Zustand |
+| Forms | React Hook Form + Zod |
+| Audio | `extendable-media-recorder` + WAV encoder, `lamejs` |
+| Tests | Jest, Testing Library, MSW |
+
+## Highlights
+
+- **Voice capture pipeline** — `useAudioRecorder` hook wraps `MediaRecorder` and ships blobs to the agent service (`src/features/audio/services/audio.service.ts`).
+- **NextAuth flow** — Credentials provider with JWT session callbacks; routes guarded by `middleware.ts`.
+- **Feature-sliced layout** — `src/features/{audio,auth,transactions,budgets,goals,debts,categories,payment-methods,reports,recommendations,subscriptions,notifications}/` each own their hooks, services, and presentation.
+- **Component library** — shadcn/ui generated into `src/components/ui/`, with chart components on top of Recharts and react-hook-form wrappers under `src/components/rhf/`.
+- **Realtime notifications** — Socket.IO client for live updates from the backend.
+
+## Local setup
+
+Requires Node 22.14 (see `.nvmrc`). The project ships both `bun.lock` and `package-lock.json` — pick one.
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+# install
+bun install            # or: npm install
+
+# environment
+cp .env.example .env   # set NEXTAUTH_SECRET, backend API URL, OAuth credentials
+
+# dev server (port 3001)
+bun run dev            # or: npm run dev
+
+# tests
+bun run test           # or: npm test
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Status & limitations
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- Hackathon-origin (Apr 2025); UX and agent UI continue to iterate.
+- Pairs with the backend at [devjaes/foppy-ai-back](https://github.com/devjaes/foppy-ai-back). The frontend is **not** functional standalone — voice capture, auth, and most reads require the backend running.
+- Spanish-language UX; copy and prompts are not yet localized to English.
+- No public deploy URL is published from this repo.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Team
 
-## Learn More
+- **My role:** Frontend co-lead (~50% of frontend commits) — audio capture hook, agent voice flow, NextAuth integration, feature-sliced refactor.
+- **Co-author:** Pablo Martinez ([@SrPabvliss](https://github.com/SrPabvliss)).
 
-To learn more about Next.js, take a look at the following resources:
+## Recognition
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+3rd place — Hatary Shunko Fintech Innovation Contest (Apr 2025), as the *Fopymes* prototype that this project grew from.
