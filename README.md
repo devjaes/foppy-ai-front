@@ -49,12 +49,11 @@ bun run dev            # or: npm run dev
 bun run test           # or: npm test
 ```
 
-## Status & limitations
+## Status
 
-- Hackathon-origin (Apr 2025); UX and agent UI continue to iterate.
-- Pairs with the backend at [devjaes/foppy-ai-back](https://github.com/devjaes/foppy-ai-back). The frontend is **not** functional standalone — voice capture, auth, and most reads require the backend running.
-- Spanish-language UX; copy and prompts are not yet localized to English.
-- No public deploy URL is published from this repo.
+- Hatary Shunko Fintech Innovation Contest (3rd place, Apr 2025); UX and agent surface iterated since.
+- Pairs with the backend at [devjaes/foppy-ai-back](https://github.com/devjaes/foppy-ai-back).
+- Spanish-first UX.
 
 ## Team
 
