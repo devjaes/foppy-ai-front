@@ -1,10 +1,10 @@
-# Foppy AI — Frontend
+# Foppy AI - Frontend
 
-> Voice-first personal finance AI — Next.js client that captures Spanish speech and renders agent responses for transactions, goals, and budgets.
+> Voice-first personal finance AI - Next.js client that captures Spanish speech and renders agent responses for transactions, goals, and budgets.
 
 ## Problem
 
-Logging expenses by hand is tedious enough that most people stop doing it. Foppy AI offers a Spanish-language voice interface so a user can capture a transaction, savings goal, or budget in a single spoken sentence — and see the structured result back in the UI.
+Logging expenses by hand is tedious enough that most people stop doing it. Foppy AI offers a Spanish-language voice interface so a user can capture a transaction, savings goal, or budget in a single spoken sentence - and see the structured result back in the UI.
 
 ## Approach
 
@@ -17,7 +17,7 @@ The client records audio in the browser via `MediaRecorder`, encodes it (WAV / M
 | Framework | Next.js 14.2 (App Router, React 18 Server Components) |
 | Language | TypeScript 5 |
 | Styles | Tailwind CSS 3.4 + shadcn/ui + Radix primitives |
-| Auth | NextAuth 5 (beta) — Credentials provider |
+| Auth | NextAuth 5 (beta) - Credentials provider |
 | Data | TanStack Query 5, Axios, Socket.IO client, Zustand |
 | Forms | React Hook Form + Zod |
 | Audio | `extendable-media-recorder` + WAV encoder, `lamejs` |
@@ -25,15 +25,15 @@ The client records audio in the browser via `MediaRecorder`, encodes it (WAV / M
 
 ## Highlights
 
-- **Voice capture pipeline** — `useAudioRecorder` hook wraps `MediaRecorder` and ships blobs to the agent service (`src/features/audio/services/audio.service.ts`).
-- **NextAuth flow** — Credentials provider with JWT session callbacks; routes guarded by `middleware.ts`.
-- **Feature-sliced layout** — `src/features/{audio,auth,transactions,budgets,goals,debts,categories,payment-methods,reports,recommendations,subscriptions,notifications}/` each own their hooks, services, and presentation.
-- **Component library** — shadcn/ui generated into `src/components/ui/`, with chart components on top of Recharts and react-hook-form wrappers under `src/components/rhf/`.
-- **Realtime notifications** — Socket.IO client for live updates from the backend.
+- **Voice capture pipeline** - `useAudioRecorder` hook wraps `MediaRecorder` and ships blobs to the agent service (`src/features/audio/services/audio.service.ts`).
+- **NextAuth flow** - Credentials provider with JWT session callbacks; routes guarded by `middleware.ts`.
+- **Feature-sliced layout** - `src/features/{audio,auth,transactions,budgets,goals,debts,categories,payment-methods,reports,recommendations,subscriptions,notifications}/` each own their hooks, services, and presentation.
+- **Component library** - shadcn/ui generated into `src/components/ui/`, with chart components on top of Recharts and react-hook-form wrappers under `src/components/rhf/`.
+- **Realtime notifications** - Socket.IO client for live updates from the backend.
 
 ## Local setup
 
-Requires Node 22.14 (see `.nvmrc`). The project ships both `bun.lock` and `package-lock.json` — pick one.
+Requires Node 22.14 (see `.nvmrc`). The project ships both `bun.lock` and `package-lock.json` - pick one.
 
 ```bash
 # install
@@ -57,9 +57,9 @@ bun run test           # or: npm test
 
 ## Team
 
-- **My role:** Frontend co-lead (~50% of frontend commits) — audio capture hook, agent voice flow, NextAuth integration, feature-sliced refactor.
+- **My role:** Frontend co-lead (~50% of frontend commits) - audio capture hook, agent voice flow, NextAuth integration, feature-sliced refactor.
 - **Co-author:** Pablo Martinez ([@SrPabvliss](https://github.com/SrPabvliss)).
 
 ## Recognition
 
-3rd place — Hatary Shunko Fintech Innovation Contest (Apr 2025), as the *Fopymes* prototype that this project grew from.
+3rd place - Hatary Shunko Fintech Innovation Contest (Apr 2025), as the *Fopymes* prototype that this project grew from.
